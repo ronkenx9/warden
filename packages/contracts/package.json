@@ -1,0 +1,13 @@
+{
+  "name": "@warden/contracts",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "test": "forge test -vvv",
+    "build": "forge build"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "forge-std": "github:foundry-rs/forge-std#v1.9.7"
+  }
+}

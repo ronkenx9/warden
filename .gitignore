@@ -1,0 +1,9 @@
+node_modules/
+dist/
+target/
+packages/slash-pool/target/
+packages/contracts/cache/
+packages/contracts/out/
+packages/contracts/broadcast/
+.env
+.DS_Store

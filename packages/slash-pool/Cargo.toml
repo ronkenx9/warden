@@ -1,0 +1,27 @@
+[package]
+name = "warden-slash-pool"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["lib", "cdylib"]
+
+[features]
+default = ["stylus-contract"]
+contract-client-gen = []
+stylus-contract = ["dep:stylus-sdk", "mini-alloc"]
+export-abi = ["stylus-contract", "stylus-sdk/export-abi"]
+debug = ["stylus-contract", "stylus-sdk/debug"]
+mini-alloc = ["stylus-sdk/mini-alloc"]
+
+[dependencies]
+alloy-primitives = "1.5.7"
+alloy-sol-types = "1.5.7"
+stylus-sdk = { version = "0.10.7", optional = true }
+
+[profile.release]
+codegen-units = 1
+strip = true
+lto = true
+panic = "abort"
+opt-level = 3

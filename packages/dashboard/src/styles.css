@@ -1,0 +1,603 @@
+:root {
+  --blue-deep: #0b3fd6;
+  --blue-bright: #1e66ff;
+  --lime: #c6f24e;
+  --cyan: #22e0ff;
+  --ink: #0a0a0f;
+  --card: #ffffff;
+  --card-soft: #eef3ff;
+  --red: #ff3b30;
+
+  color: var(--ink);
+  font-family: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(120% 90% at 50% 0%, var(--blue-bright) 0%, var(--blue-deep) 70%) fixed,
+    var(--blue-deep);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("/img/bg-texture.png") center / cover no-repeat;
+  opacity: 0.18;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 0;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: 28px;
+}
+
+/* ---------- HERO ---------- */
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  gap: 28px;
+  align-items: center;
+  padding: 40px 44px;
+  background: var(--blue-deep);
+  border: 4px solid var(--ink);
+  border-radius: 22px;
+  box-shadow: 10px 10px 0 var(--ink);
+  overflow: hidden;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin: 0 0 18px;
+  padding: 6px 12px;
+  color: var(--ink);
+  background: var(--lime);
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.heroWordmark {
+  margin: 6px 0 4px;
+  font-family: "Anton", sans-serif;
+  font-size: clamp(72px, 9vw, 128px);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--lime);
+  -webkit-text-stroke: 4px var(--ink);
+  text-shadow: 7px 7px 0 var(--ink);
+}
+
+.subtitle {
+  max-width: 640px;
+  margin-top: 14px;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.tagline {
+  margin-top: 14px;
+  font-family: "Anton", sans-serif;
+  font-size: 26px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--lime);
+  -webkit-text-stroke: 1.5px var(--ink);
+}
+
+.heroArt {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.heroGuardian {
+  width: 100%;
+  max-width: 360px;
+  filter: drop-shadow(6px 8px 0 rgba(0, 0, 0, 0.35));
+}
+
+.heroMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.heroMetrics > div {
+  min-height: 124px;
+  display: grid;
+  align-content: space-between;
+  padding: 16px;
+  color: var(--ink);
+  background: var(--lime);
+  border: 4px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.heroMetrics svg {
+  width: 24px;
+  height: 24px;
+}
+
+.heroMetrics strong {
+  display: block;
+  font-family: "Anton", sans-serif;
+  font-size: 44px;
+  line-height: 1;
+}
+
+.heroMetrics span {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* ---------- GRID + PANELS ---------- */
+.grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.topGrid {
+  grid-template-columns: 1.16fr 0.84fr;
+}
+
+.middleGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.bottomGrid {
+  grid-template-columns: 0.92fr 1.08fr;
+}
+
+.panel {
+  position: relative;
+  min-width: 0;
+  padding: 22px;
+  background: var(--card);
+  border: 4px solid var(--ink);
+  border-radius: 18px;
+  box-shadow: 7px 7px 0 var(--ink);
+}
+
+.incidentPanel {
+  background: var(--card-soft);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.panelHeader p {
+  color: var(--blue-deep);
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.panelHeader h2 {
+  margin-top: 6px;
+  font-family: "Anton", sans-serif;
+  font-size: 24px;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+}
+
+.swarmCaption {
+  margin-top: 8px;
+  color: #4a5568;
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.headerIcon {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+/* ---------- VAULT ---------- */
+.vaultValue {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 3px dashed var(--ink);
+}
+
+.vaultValue span,
+.monitorRows span,
+.slashSplit span,
+.signatureBox span,
+.proofBox span {
+  display: block;
+  color: #4a5568;
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.vaultValue strong {
+  font-family: "Anton", sans-serif;
+  font-size: 40px;
+}
+
+.rules {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.rule,
+.incidentFlow > div,
+.monitorRows > div,
+.agent,
+.timelineItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.rule {
+  min-height: 64px;
+  padding: 12px 14px;
+  background: var(--card-soft);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+}
+
+.rule span,
+.agent span,
+.timelineItem p,
+.timelineItem span,
+.agentMeta span {
+  color: #4a5568;
+  font-size: 13px;
+}
+
+.rule strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.status {
+  min-width: 104px;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status.pass {
+  color: var(--ink);
+  background: var(--lime);
+}
+
+.status.fail {
+  color: #ffffff;
+  background: var(--red);
+}
+
+/* ---------- INCIDENT ---------- */
+.incidentTop {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.subhint {
+  color: #4a5568;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.incidentAgent {
+  width: 130px;
+  max-width: 38%;
+  justify-self: end;
+  filter: drop-shadow(4px 5px 0 rgba(0, 0, 0, 0.25));
+}
+
+.incidentFlow {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.incidentFlow > div {
+  min-height: 54px;
+  justify-content: flex-start;
+  padding: 13px 14px;
+  background: #ffffff;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.incidentFlow .reverted {
+  color: #ffffff;
+  background: var(--red);
+  font-family: "Space Mono", monospace;
+}
+
+.proofBox,
+.signatureBox {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--ink);
+  color: #ffffff;
+  border-radius: 12px;
+}
+
+.proofBox code {
+  display: block;
+  margin-top: 8px;
+  font-family: "Space Mono", monospace;
+  color: var(--lime);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- MONITOR / SLASH / DEPLOY / PERMISSION ---------- */
+.monitorRows {
+  display: grid;
+  gap: 10px;
+}
+
+.monitorRows > div {
+  min-height: 48px;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed #c4cee4;
+}
+
+.monitorRows strong {
+  font-weight: 700;
+}
+
+.slashSplit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.slashSplit > div {
+  min-height: 140px;
+  display: grid;
+  align-content: space-between;
+  padding: 16px;
+  background: var(--card-soft);
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+}
+
+.slashSplit strong {
+  font-family: "Anton", sans-serif;
+  font-size: 32px;
+}
+
+.slashSplit small {
+  color: #4a5568;
+}
+
+.signatureBox strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--lime);
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+/* ---------- MARKETPLACE / TIMELINE ---------- */
+.agentList,
+.timeline {
+  display: grid;
+  gap: 10px;
+}
+
+.agent {
+  min-height: 72px;
+  padding: 12px;
+  background: var(--card-soft);
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+}
+
+.agentScore {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  background: var(--lime);
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  font-family: "Anton", sans-serif;
+  font-size: 20px;
+}
+
+.agent > div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+
+.agent > div:nth-child(2) strong {
+  font-weight: 700;
+}
+
+.agent > div:nth-child(2) span {
+  display: block;
+  margin-top: 3px;
+}
+
+.agentMeta {
+  min-width: 116px;
+  text-align: right;
+}
+
+.agentMeta b {
+  display: block;
+  margin-top: 3px;
+}
+
+.timelineItem {
+  min-height: 66px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 2px dashed #c4cee4;
+}
+
+.timelineItem > span {
+  width: 74px;
+  flex: 0 0 auto;
+  font-family: "Space Mono", monospace;
+  font-weight: 700;
+}
+
+.timelineItem > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.timelineItem strong {
+  font-weight: 700;
+}
+
+.timelineItem p {
+  margin-top: 3px;
+}
+
+.timelineItem em {
+  min-width: 122px;
+  color: var(--blue-deep);
+  font-style: normal;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 980px) {
+  .shell {
+    padding: 16px;
+  }
+
+  .hero,
+  .topGrid,
+  .middleGrid,
+  .bottomGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 28px;
+  }
+
+  .heroArt {
+    order: -1;
+  }
+
+  .heroGuardian {
+    max-width: 220px;
+  }
+}
+
+@media (max-width: 620px) {
+  .hero {
+    padding: 20px;
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+
+  .heroMetrics {
+    grid-template-columns: 1fr;
+  }
+
+  .subtitle {
+    font-size: 19px;
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .rule,
+  .timelineItem,
+  .agent {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .status,
+  .timelineItem em,
+  .agentMeta {
+    text-align: left;
+  }
+
+  .slashSplit {
+    grid-template-columns: 1fr;
+  }
+
+  .incidentAgent {
+    width: 96px;
+  }
+}

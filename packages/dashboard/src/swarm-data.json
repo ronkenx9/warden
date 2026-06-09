@@ -1,0 +1,103 @@
+{
+  "generatedAt": "2026-06-09T01:15:27.601Z",
+  "seed": 42,
+  "agentCount": 6,
+  "rounds": 8,
+  "metrics": {
+    "allowedTrades": 33,
+    "violationAttempts": 15,
+    "fundsMovedOnViolation": 0,
+    "totalSlashed": 150,
+    "staked": 600,
+    "remaining": 450,
+    "invariantPass": true
+  },
+  "agents": [
+    {
+      "name": "YieldAgent",
+      "personality": "honest",
+      "score": 100,
+      "stake": "100 USDG",
+      "violations": 0,
+      "ownerPaid": 0,
+      "state": "Clean"
+    },
+    {
+      "name": "IndexPilot",
+      "personality": "reckless",
+      "score": 63,
+      "stake": "70 USDG",
+      "violations": 3,
+      "ownerPaid": 30,
+      "state": "Watch"
+    },
+    {
+      "name": "HedgeLite",
+      "personality": "nightowl",
+      "score": 38,
+      "stake": "50 USDG",
+      "violations": 5,
+      "ownerPaid": 50,
+      "state": "Watch"
+    },
+    {
+      "name": "ArbBot",
+      "personality": "wronghand",
+      "score": 75,
+      "stake": "80 USDG",
+      "violations": 2,
+      "ownerPaid": 20,
+      "state": "Watch"
+    },
+    {
+      "name": "DcaDroid",
+      "personality": "imposter",
+      "score": 38,
+      "stake": "50 USDG",
+      "violations": 5,
+      "ownerPaid": 50,
+      "state": "Watch"
+    },
+    {
+      "name": "NightDesk",
+      "personality": "honest",
+      "score": 100,
+      "stake": "100 USDG",
+      "violations": 0,
+      "ownerPaid": 0,
+      "state": "Clean"
+    }
+  ],
+  "timeline": [
+    {
+      "time": "11:18 CET",
+      "actor": "YieldAgent",
+      "action": "In-policy rebalance",
+      "result": "Allowed"
+    },
+    {
+      "time": "03:26 CET",
+      "actor": "HedgeLite",
+      "action": "Attempted blocked-hours trade",
+      "result": "TradingWindowClosed -> slashed"
+    },
+    {
+      "time": "10:12 CET",
+      "actor": "DcaDroid",
+      "action": "Attempted impersonation trade",
+      "result": "UnauthorizedAgent -> slashed"
+    },
+    {
+      "time": "16:13 CET",
+      "actor": "IndexPilot",
+      "action": "Attempted over-notional trade",
+      "result": "TradeValueTooHigh -> slashed"
+    },
+    {
+      "time": "14:36 CET",
+      "actor": "ArbBot",
+      "action": "Attempted wrong-asset trade",
+      "result": "AssetNotAllowed -> slashed"
+    }
+  ]
+}

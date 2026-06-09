@@ -1,0 +1,24 @@
+{
+  "name": "@warden/agent",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "demo": "tsx src/demo.ts",
+    "e2e": "tsx src/e2e-local.ts",
+    "swarm": "tsx src/swarm-local.ts",
+    "env:robinhood": "tsx src/check-robinhood-env.ts",
+    "live:robinhood": "tsx src/live-robinhood.ts",
+    "live:robinhood:slash": "WARDEN_LIVE_SLASH=1 tsx src/live-robinhood.ts",
+    "preflight:robinhood": "tsx src/status-robinhood.ts",
+    "status:robinhood": "tsx src/status-robinhood.ts"
+  },
+  "dependencies": {
+    "tsx": "^4.19.2",
+    "viem": "^2.21.54"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

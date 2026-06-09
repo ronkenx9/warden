@@ -1,0 +1,28 @@
+{
+  "name": "warden",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Trustless agent vault for tokenized real-world assets",
+  "scripts": {
+    "test": "pnpm --filter @warden/contracts test && pnpm --filter @warden/imessage test",
+    "build": "pnpm --filter @warden/agent build && pnpm --filter @warden/monitor build && pnpm --filter @warden/imessage build && pnpm --filter @warden/dashboard build",
+    "demo": "pnpm --filter @warden/agent demo && pnpm --filter @warden/monitor demo && pnpm --filter @warden/imessage demo",
+    "imessage:demo": "pnpm --filter @warden/imessage demo",
+    "imessage:live": "pnpm --filter @warden/imessage live",
+    "e2e": "pnpm --filter @warden/contracts build && pnpm --filter @warden/agent e2e",
+    "swarm": "pnpm --filter @warden/contracts build && pnpm --filter @warden/agent swarm",
+    "verify:submission": "pnpm test && pnpm build && pnpm demo && pnpm e2e && pnpm swarm:ci && pnpm stylus:check && pnpm preflight:robinhood",
+    "swarm:ci": "WARDEN_SWARM_SEED=42 pnpm --filter @warden/agent swarm",
+    "env:robinhood": "pnpm --filter @warden/agent env:robinhood",
+    "preflight:robinhood": "pnpm --filter @warden/agent preflight:robinhood",
+    "live:robinhood": "pnpm --filter @warden/agent live:robinhood",
+    "live:robinhood:slash": "pnpm --filter @warden/agent live:robinhood:slash",
+    "status:robinhood": "pnpm --filter @warden/agent status:robinhood",
+    "dev": "pnpm --filter @warden/dashboard dev",
+    "preview": "pnpm --filter @warden/dashboard preview",
+    "stylus:check": "cd packages/slash-pool && ./verify-stylus.sh"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
