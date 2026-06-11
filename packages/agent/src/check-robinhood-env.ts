@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { getAddress, type Address, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-const expectedDeployer = "0xAdAd6565e19c5d256E1114226735D5496Ab9a627" as const satisfies Address;
+const defaultExpectedDeployer = "0xAdAd6565e19c5d256E1114226735D5496Ab9a627" as const satisfies Address;
 
 async function loadDotEnv() {
   if (process.env.WARDEN_SKIP_DOTENV === "1") {
@@ -50,11 +50,14 @@ async function main() {
   await loadDotEnv();
 
   const deployer = privateKeyAccount("DEPLOYER_PRIVATE_KEY");
+  const expectedDeployer = process.env.WARDEN_EXPECTED_DEPLOYER_ADDRESS
+    ? getAddress(process.env.WARDEN_EXPECTED_DEPLOYER_ADDRESS)
+    : defaultExpectedDeployer;
   const agentKey = process.env.WARDEN_AGENT_PRIVATE_KEY;
   const agent = agentKey ? privateKeyAccount("WARDEN_AGENT_PRIVATE_KEY") : deployer;
   const watchedAgent = process.env.WARDEN_AGENT_ADDRESS
     ? getAddress(process.env.WARDEN_AGENT_ADDRESS)
-    : expectedDeployer;
+    : deployer.address;
 
   console.log("WARDEN Robinhood env check");
   console.log(`DEPLOYER_PRIVATE_KEY address: ${deployer.address}`);
@@ -63,7 +66,7 @@ async function main() {
   console.log(`Watched agent address: ${watchedAgent}`);
 
   const checks = [
-    ["deployer key matches funded deployment wallet", deployer.address.toLowerCase() === expectedDeployer.toLowerCase()],
+    ["deployer key matches expected deployer wallet", deployer.address.toLowerCase() === expectedDeployer.toLowerCase()],
     ["watched agent matches signing agent", watchedAgent.toLowerCase() === agent.address.toLowerCase()],
   ] as const;
 
