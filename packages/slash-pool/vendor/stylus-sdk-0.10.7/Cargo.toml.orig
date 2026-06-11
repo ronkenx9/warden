@@ -24,10 +24,9 @@ keccak = ">=0.1.6, <0.2"
 mini-alloc = { workspace = true, optional = true }
 stylus-proc.workspace = true
 stylus-core.workspace = true
-# ruint 1.17 introduced a const assertion in to_le_bytes that breaks
-# Uint<8,1>::to_le_bytes::<32>() used in storage encoding. Pin to 1.16.x
-# until the SDK's storage code is updated to match.
-ruint = { version = ">=1.16, <1.17", default-features = false }
+# WARDEN patch: ruint <=1.17 is vulnerable. The vendored storage code avoids
+# generic to_{be,le}_bytes::<32>() calls that panic under ruint 1.18.x.
+ruint = { version = "1.18.0", default-features = false }
 branches = { version = "0.4", default-features = false }
 rclite = "0.4"
 
