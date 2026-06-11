@@ -1,5 +1,15 @@
 import { readFile } from "node:fs/promises";
-import { createPublicClient, defineChain, formatEther, formatUnits, http, parseUnits, type Abi, type Address } from "viem";
+import {
+  createPublicClient,
+  defineChain,
+  formatEther,
+  formatUnits,
+  getAddress,
+  http,
+  parseUnits,
+  type Abi,
+  type Address,
+} from "viem";
 
 type Artifact = {
   abi: Abi;
@@ -18,7 +28,7 @@ const robinhood = defineChain({
   testnet: true,
 });
 
-const deployment = {
+const defaultDeployment = {
   deployer: "0xAdAd6565e19c5d256E1114226735D5496Ab9a627",
   tsla: "0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E",
   usdg: "0x7E955252E15c84f5768B83c41a71F9eba181802F",
@@ -28,6 +38,26 @@ const deployment = {
   slashPool: "0xE9F0F8BE0B079d5A910e651aF62A1a3756057Dc8",
   mockRouter: "0x1E1e8528760B310d0b23b32ee9B5a0025a280FF7",
 } as const satisfies Record<string, Address>;
+
+type Deployment = Record<keyof typeof defaultDeployment, Address>;
+
+function addressEnv(name: string, fallback: Address): Address {
+  const value = process.env[name];
+  return value && value.length > 0 ? getAddress(value) : fallback;
+}
+
+function loadDeploymentFromEnv(): Deployment {
+  return {
+    deployer: addressEnv("WARDEN_EXPECTED_DEPLOYER_ADDRESS", defaultDeployment.deployer),
+    tsla: addressEnv("WARDEN_ASSET", defaultDeployment.tsla),
+    usdg: addressEnv("WARDEN_COLLATERAL", defaultDeployment.usdg),
+    permissionEngine: addressEnv("WARDEN_PERMISSION_ENGINE", defaultDeployment.permissionEngine),
+    vault: addressEnv("WARDEN_VAULT", defaultDeployment.vault),
+    identityRegistry: addressEnv("WARDEN_IDENTITY_REGISTRY", defaultDeployment.identityRegistry),
+    slashPool: addressEnv("WARDEN_SLASH_POOL", defaultDeployment.slashPool),
+    mockRouter: addressEnv("WARDEN_MOCK_ROUTER", defaultDeployment.mockRouter),
+  };
+}
 
 async function loadDotEnv() {
   if (process.env.WARDEN_SKIP_DOTENV === "1") {
@@ -70,6 +100,7 @@ async function main() {
   await loadDotEnv();
 
   const rpcUrl = process.env.ROBINHOOD_RPC_URL ?? "https://rpc.testnet.chain.robinhood.com";
+  const deployment = loadDeploymentFromEnv();
   const watchedAgent = (process.env.WARDEN_AGENT_ADDRESS ?? deployment.deployer) as Address;
   const publicClient = createPublicClient({ chain: robinhood, transport: http(rpcUrl) });
   const vaultArtifact = await artifact("WARDENVault.sol/WARDENVault.json");

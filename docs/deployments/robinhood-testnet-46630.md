@@ -36,6 +36,38 @@ This is the production-shaped deployment using official Robinhood Chain testnet 
 | TSLA approval | `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E` | `0x78cf0261b849d81b619dfa4502afbebba1f1a5bb202c8557d11923a826a5e571` |
 | 1 TSLA vault deposit | `0x5e8b55278FC2c1d0Ddb29A8973Bbba9f5CD55c98` | `0x86f649ce05e3c3e88e30414626d9d6e204b8b053f7fa7690646a61cdcea2a0a6` |
 
+## Hardened Official Robinhood Token Stack
+
+Date: 2026-06-11
+Deployer: `0x6727A665ef9257E2A4e9A4ED58B9136f62b0E1b1`
+
+This deployment uses the authorized-monitor `SlashPool` and env-configurable live scripts.
+
+| Contract / Action | Address | Transaction |
+| --- | --- | --- |
+| Official TSLA token | `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E` | Robinhood deployment |
+| Official USDG token | `0x7E955252E15c84f5768B83c41a71F9eba181802F` | Robinhood deployment |
+| PermissionEngine | `0x049527f5331FaeA8f0e9E86be8FDdCB86BdeE1ba` | `0xccf71234036201eb90477a849c45549f1ee0663430bc04deeca3b2bc0f4b989f` |
+| WARDENVault | `0x72E59162C013864AF1e150fbe12e454A99aF7412` | `0x056f4bb445cfe20ac9ff0c2c3126daa1db6d521be4dd33f83d018a91801c388b` |
+| AgentIdentityRegistry | `0x4D566c927d0B4d40AcC880b9729d8c5D905867D1` | `0xd3a3e7dd072ecfd21a8d63f21ac04fcb29a13971129d6d6ab15534a524b79fb7` |
+| SlashPool | `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE` | `0x5842401dd320d70b16aa099136ce2ec94ab8d41a3cf1a4042bd7739a17983d94` |
+| Slash recorder setup | `0x4D566c927d0B4d40AcC880b9729d8c5D905867D1` | `0xbcecca5131a9feddf82b63d00a0ecc7defef1730d1374fe9ace3299ce8c5fbf6` |
+| TSLA approval | `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E` | `0xeeec1ce1ad207dd8078fd6d27e3ff58f5080378e9727b62d03497b07794ff777` |
+| 1 TSLA vault deposit | `0x72E59162C013864AF1e150fbe12e454A99aF7412` | `0x800622ee715907dfbae3e5ebf606c84452ecf7d465087d368a531e502cadf523` |
+| Policy activation | `0x72E59162C013864AF1e150fbe12e454A99aF7412` | `0x231871ccef52435d2fc7b0a11d050db2a9a2e242842756204cc80f7603668393` |
+| Agent identity registration | `0x4D566c927d0B4d40AcC880b9729d8c5D905867D1` | `0xc8d29104c27f0126efd59f5dac43ad1b293b4ed141d3accc55d965b9b14bba82` |
+| USDG collateral deposit | `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE` | `0x2272db8bdeb380640421ed88c65cf63df758dca4391caedeea70732ad57ab1fb` |
+| Live slash / reputation update | `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE` | `0x4c6f96f76c623d46b0cb53c327067c98acb06b2ca61b7d3e1f9610c0de5c4a92` |
+
+Live proof postconditions from `pnpm status:robinhood` at block `73624453`:
+
+- vault totalAssets: `1 TSLA`
+- agent identity id: `1`
+- agent violation count: `1`
+- agent wallet USDG: `100 USDG`
+- SlashPool stake: `0 USDG` after stake and slash
+- live slash proof: `0xdfde4926362720f4c4c0d9c7fd4fa7ea17b397ef1230a90ae9f6fda35d6398b4`
+
 Source verification is complete on Robinhood's Blockscout explorer:
 
 - [PermissionEngine](https://explorer.testnet.chain.robinhood.com/address/0xd63efdd5f4774f48f678bd9d12a3ce85c758c428)
@@ -62,4 +94,13 @@ Source verification is complete on Robinhood's Blockscout explorer:
 
 `STYLUS_ENDPOINT=https://rpc.testnet.chain.robinhood.com pnpm stylus:check` passed native Rust tests, built the 7.7 KB WASM contract, exported `ISlashPoolStylus.sol`, and completed `cargo stylus check` activation validation against Robinhood Chain testnet.
 
-`cargo stylus deploy --no-verify --estimate-gas` returned an unusable default deployer estimate of about `784 ETH`, so the Stylus deployment is not broadcast on Robinhood yet. Use an Arbitrum Sepolia Stylus endpoint or confirmed Robinhood Stylus deployer configuration before broadcasting the Rust Slash Pool.
+## Stylus Deployment
+
+`pnpm stylus:deploy` broadcast and activated the Rust/Stylus SlashPool on Robinhood Chain testnet using local non-Docker build mode because Docker was unavailable.
+
+| Contract | Address | Transaction |
+| --- | --- | --- |
+| SlashPoolStylus | `0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8` | `0xd4fdf1266b5ebd6c4ef74e6ee473d3986b9af3a529f9998baf16a924c94166dc` |
+| Stylus activation | `0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8` | `0x2971f26a31e8221e166ed29dbe3f1fb19188d01780dfaaf7aa887e5d45161a8c` |
+
+Deployment artifact: `packages/slash-pool/deployments/stylus-46630.json`.

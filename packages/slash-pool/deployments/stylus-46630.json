@@ -1,0 +1,11 @@
+{
+  "contract": "SlashPoolStylus",
+  "chainId": 46630,
+  "address": "0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8",
+  "deploymentTx": "0xd4fdf1266b5ebd6c4ef74e6ee473d3986b9af3a529f9998baf16a924c94166dc",
+  "activationTx": "0x2971f26a31e8221e166ed29dbe3f1fb19188d01780dfaaf7aa887e5d45161a8c",
+  "endpoint": "https://rpc.testnet.chain.robinhood.com",
+  "deployedAt": "2026-06-11T22:10:06Z",
+  "abi": "deployments/ISlashPoolStylus-46630.sol",
+  "log": "deployments/stylus-46630-20260611T221006Z.log"
+}

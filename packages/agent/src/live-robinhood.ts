@@ -11,6 +11,7 @@ import {
   parseUnits,
   keccak256,
   defineChain,
+  getAddress,
   type Abi,
   type Address,
   type Hex,
@@ -36,7 +37,7 @@ const robinhood = defineChain({
   testnet: true,
 });
 
-const deployment = {
+const defaultDeployment = {
   tsla: "0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E",
   usdg: "0x7E955252E15c84f5768B83c41a71F9eba181802F",
   permissionEngine: "0xd63eFdD5F4774f48F678bD9d12A3cE85c758C428",
@@ -45,6 +46,10 @@ const deployment = {
   slashPool: "0xE9F0F8BE0B079d5A910e651aF62A1a3756057Dc8",
   mockRouter: "0x1E1e8528760B310d0b23b32ee9B5a0025a280FF7",
 } as const satisfies Record<string, Address>;
+
+type Deployment = Record<keyof typeof defaultDeployment, Address>;
+
+let deployment: Deployment = defaultDeployment;
 
 async function loadDotEnv() {
   if (process.env.WARDEN_SKIP_DOTENV === "1") {
@@ -89,6 +94,23 @@ function requiredPrivateKey(name: string): Hex {
   return value as Hex;
 }
 
+function addressEnv(name: string, fallback: Address): Address {
+  const value = process.env[name];
+  return value && value.length > 0 ? getAddress(value) : fallback;
+}
+
+function loadDeploymentFromEnv(): Deployment {
+  return {
+    tsla: addressEnv("WARDEN_ASSET", defaultDeployment.tsla),
+    usdg: addressEnv("WARDEN_COLLATERAL", defaultDeployment.usdg),
+    permissionEngine: addressEnv("WARDEN_PERMISSION_ENGINE", defaultDeployment.permissionEngine),
+    vault: addressEnv("WARDEN_VAULT", defaultDeployment.vault),
+    identityRegistry: addressEnv("WARDEN_IDENTITY_REGISTRY", defaultDeployment.identityRegistry),
+    slashPool: addressEnv("WARDEN_SLASH_POOL", defaultDeployment.slashPool),
+    mockRouter: addressEnv("WARDEN_MOCK_ROUTER", defaultDeployment.mockRouter),
+  };
+}
+
 async function artifact(path: string): Promise<Artifact> {
   return JSON.parse(await readFile(new URL(`../../contracts/out/${path}`, import.meta.url), "utf8")) as Artifact;
 }
@@ -108,6 +130,7 @@ function currentMinutePolicyWindow(timestamp: bigint): { start: number; end: num
 
 async function main() {
   await loadDotEnv();
+  deployment = loadDeploymentFromEnv();
 
   const mode = (process.env.WARDEN_LIVE_MODE ?? "blocked-now") as LiveMode;
   if (mode !== "blocked-now" && mode !== "allowed") {

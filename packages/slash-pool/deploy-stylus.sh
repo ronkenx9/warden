@@ -36,11 +36,17 @@ cargo test --no-default-features
 cargo stylus build --features stylus-contract
 cargo stylus export-abi --rust-features export-abi > "$abi_file"
 
+deploy_flags=()
+if [[ "${WARDEN_STYLUS_NO_VERIFY:-}" == "1" ]] || ! command -v docker >/dev/null 2>&1; then
+  deploy_flags+=(--no-verify)
+fi
+
 set +e
 cargo stylus deploy \
   --features stylus-contract \
   --endpoint "$STYLUS_ENDPOINT" \
-  --private-key "$DEPLOYER_PRIVATE_KEY" | tee "$log_file"
+  --private-key "$DEPLOYER_PRIVATE_KEY" \
+  "${deploy_flags[@]}" | tee "$log_file"
 status=${PIPESTATUS[0]}
 set -e
 
@@ -49,8 +55,10 @@ if [[ "$status" -ne 0 ]]; then
   exit "$status"
 fi
 
-address="$(awk '/deployed code at address:/ { print $5 }' "$log_file" | tail -n 1)"
-tx_hash="$(awk '/deployment tx hash:/ { print $4 }' "$log_file" | tail -n 1)"
+clean_log="$(perl -pe 's/\e\[[0-9;]*m//g' "$log_file")"
+address="$(printf '%s\n' "$clean_log" | sed -nE 's/.*deployed code at address: (0x[0-9a-fA-F]{40}).*/\1/p' | tail -n 1)"
+tx_hash="$(printf '%s\n' "$clean_log" | sed -nE 's/.*deployment tx hash: (0x[0-9a-fA-F]{64}).*/\1/p' | tail -n 1)"
+activation_tx="$(printf '%s\n' "$clean_log" | sed -nE 's/.*successfully activated contract 0x[0-9a-fA-F]{40} with tx "?([0-9a-fA-F]{64})"?.*/0x\1/p' | tail -n 1)"
 
 if [[ -z "$address" ]]; then
   echo "Stylus deployment completed but no deployed address was parsed; inspect $log_file" >&2
@@ -64,6 +72,7 @@ cat > "$json_file" <<EOF
   "chainId": ${chain_id},
   "address": "${address}",
   "deploymentTx": "${tx_hash}",
+  "activationTx": "${activation_tx}",
   "endpoint": "${STYLUS_ENDPOINT}",
   "deployedAt": "${timestamp}",
   "abi": "${abi_file}",

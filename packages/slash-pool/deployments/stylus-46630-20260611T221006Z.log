@@ -1,0 +1,46 @@
+2026-06-11T22:10:09.150Z INFO  [stylus_tools::core::build] [0;0m[90mBuilding project with Cargo.toml version: 0.1.0[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/Cargo.lock[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/Cargo.toml[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/rust-toolchain.toml[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/src/core.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/src/lib.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/src/main.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/Cargo.toml[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/abi/const_string.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/abi/export/internal.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/abi/export/mod.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/abi/impls.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/abi/internal.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/abi/ints.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/abi/mod.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/call/mod.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/call/raw.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/call/transfer.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/crypto.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/debug.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/deploy/mod.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/deploy/raw.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/host/mod.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/hostio.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/lib.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/methods.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/prelude.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/storage/array.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/storage/bytes.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/storage/map.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/storage/mod.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/storage/traits.rs[0;0m
+[0;0m[90mFile used for deployment hash: /Users/gadgetplug/Documents/vibecoding/warden/packages/slash-pool/vendor/stylus-sdk-0.10.7/src/storage/vec.rs[0;0m
+[0;0m[90mproject metadata hash computed on deployment: "767b2dd0bceb84f9b1fdcf7533e57c65d4081556662d751a433779fe544ec655"[0;0m
+2026-06-11T22:10:09.349Z INFO  [stylus_tools::core::check] [0;0m[90mcontract size: [38;5;48;1m6.9 KB[0;0m[90m (6933 bytes)[0;0m
+2026-06-11T22:10:10.429Z INFO  [stylus_tools::core::activation] [0;0m[90mwasm data fee: [38;5;48;1m0.000078 ETH[0;0m [0;0m[90m(originally [38;5;48;1m0.000065 ETH[0;0m[0;0m[90m with [38;5;183;1m20%[0;0m[90m bump)[0;0m
+[0;0m[90mchecking whether the contract has a constructor...[0;0m
+2026-06-11T22:10:13.619Z INFO  [stylus_tools::core::deployment] [0;0m[90mdeployed code at address: [38;5;183;1m0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8[0;0m[0;0m
+2026-06-11T22:10:13.619Z INFO  [stylus_tools::core::deployment] [0;0m[90mdeployment tx hash: [38;5;183;1m0xd4fdf1266b5ebd6c4ef74e6ee473d3986b9af3a529f9998baf16a924c94166dc[0;0m[0;0m
+2026-06-11T22:10:14.334Z INFO  [stylus_tools::core::activation] [0;0m[90mwasm data fee: [38;5;48;1m0.000078 ETH[0;0m [0;0m[90m(originally [38;5;48;1m0.000065 ETH[0;0m[0;0m[90m with [38;5;183;1m20%[0;0m[90m bump)[0;0m
+2026-06-11T22:10:15.963Z INFO  [stylus_tools::core::activation] [0;0m[90msuccessfully activated contract 0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8 with tx [38;5;183;1m"2971f26a31e8221e166ed29dbe3f1fb19188d01780dfaaf7aa887e5d45161a8c"[0;0m[0;0m
+[38;5;48;1mNOTE:
+        We recommend running cargo stylus cache bid b50d8f8eb201124e5e1cea1de2bdb49c6ae513c8 0 to cache your activated contract in ArbOS.
+        Cached contracts benefit from cheaper calls.
+        To read more about the Stylus contract cache, see:
+        https://docs.arbitrum.io/stylus/how-tos/caching-contracts[0;0m
