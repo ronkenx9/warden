@@ -217,6 +217,12 @@ async function main() {
       client: { public: publicClient, wallet: deployerClient },
     });
     await mined(await identityAsDeployer.write.setSlashRecorder([slashPool]));
+    const slashAsDeployer = getContract({
+      address: slashPool,
+      abi: slashArtifact.abi,
+      client: { public: publicClient, wallet: deployerClient },
+    });
+    await mined(await slashAsDeployer.write.setMonitorAuthorization([monitor.address, true]));
 
     const personalities: Personality[] = ["honest", "reckless", "nightowl", "wronghand", "imposter"];
     const pairs: Pair[] = [];

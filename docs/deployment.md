@@ -65,7 +65,23 @@ Contracts deployed by this script:
 - `SlashPool`
 - `MockRouter`
 
-For a real Robinhood Chain deployment, use official token addresses from the Robinhood contracts page. The current verified TSLA vault uses `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E`.
+For a real Robinhood Chain or Arbitrum deployment against existing token contracts, use `DeployOfficial` instead of the mock-token script:
+
+```bash
+cd /Users/gadgetplug/Documents/vibecoding/warden
+pnpm deploy:official
+```
+
+Required `.env` values:
+
+- `WARDEN_DEPLOY_RPC_URL`
+- `DEPLOYER_PRIVATE_KEY`
+- `WARDEN_ASSET`
+- `WARDEN_COLLATERAL`
+- `WARDEN_VAULT_NAME`
+- `WARDEN_VAULT_SYMBOL`
+
+The current verified TSLA vault uses Robinhood TSLA `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E` and USDG `0x7E955252E15c84f5768B83c41a71F9eba181802F`.
 
 ## Arbitrum Sepolia / Arbitrum One
 
@@ -99,11 +115,23 @@ Use `WARDEN_SKIP_STYLUS_ACTIVATION=1 pnpm stylus:check` only when an offline WAS
 Deploy to Arbitrum Sepolia with:
 
 ```bash
-cargo stylus deploy \
-  --features stylus-contract \
-  --endpoint "$ARBITRUM_SEPOLIA_RPC_URL" \
-  --private-key "$DEPLOYER_PRIVATE_KEY"
+STYLUS_ENDPOINT="$ARBITRUM_SEPOLIA_RPC_URL" pnpm stylus:deploy
 ```
+
+`pnpm stylus:deploy` runs Rust tests, builds the WASM, exports the ABI, broadcasts with `cargo stylus deploy`, and writes a durable deployment artifact under `packages/slash-pool/deployments/`.
+
+After deploying a SlashPool with monitor authorization enabled, authorize the monitor before it can submit slashes:
+
+```bash
+pnpm monitor:authorize
+```
+
+Required `.env` values:
+
+- `WARDEN_DEPLOY_RPC_URL`
+- `DEPLOYER_PRIVATE_KEY`
+- `WARDEN_SLASH_POOL`
+- `WARDEN_MONITOR_ADDRESS`
 
 ## Post-Deployment Smoke Test
 
@@ -129,6 +157,18 @@ pnpm live:robinhood
 
 Set `WARDEN_LIVE_SLASH=1` only after the agent wallet has USDG. The script will register the agent identity if needed, stake USDG, submit the violation proof, and verify that stake, beneficiary USDG, and agent reputation changed.
 
-## Known Deployment Gap
+For a monitor-runner flow, start the payment-gated service:
 
-The Robinhood Solidity deployment is live and verified. Remaining deployment gap: Rust/Stylus Slash Pool has passed activation validation, but has not been broadcast because the default `cargo stylus deploy --estimate-gas` path returned an unusable gas estimate on Robinhood.
+```bash
+pnpm monitor:serve
+```
+
+`GET /quote` returns the x402-shaped payment quote. `POST /violations` submits a slash transaction after an `x-payment` header is present; set `WARDEN_ACCEPT_UNPAID_MONITOR_REQUESTS=1` only for local testing. The same submit path is available as a CLI:
+
+```bash
+pnpm monitor:submit
+```
+
+## Current Deployment Gap
+
+The Robinhood Solidity deployment currently recorded in `docs/deployments/robinhood-testnet-46630.md` predates monitor authorization. For a production-candidate deployment, redeploy with `pnpm deploy:official`, authorize a monitor with `pnpm monitor:authorize`, then run live slash through `pnpm live:robinhood:slash` or `pnpm monitor:submit`. The Rust/Stylus SlashPool has a broadcast helper, but production readiness still requires a successful `pnpm stylus:deploy` run and the resulting address artifact.

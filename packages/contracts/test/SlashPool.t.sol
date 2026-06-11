@@ -20,6 +20,7 @@ contract SlashPoolTest is Test {
         registry = new AgentIdentityRegistry();
         slashPool = new SlashPool(usdc, registry);
         registry.setSlashRecorder(address(slashPool));
+        slashPool.setMonitorAuthorization(monitor, true);
 
         usdc.mint(operator, 1_000e6);
         vm.prank(operator);
@@ -50,6 +51,38 @@ contract SlashPoolTest is Test {
         assertEq(usdc.balanceOf(sarah), 100e6);
         assertEq(registry.violationCount(agentId), 1);
         assertEq(registry.violationProof(agentId, 0), proofHash);
+    }
+
+    function testRejectsUnauthorizedMonitor() public {
+        vm.prank(operator);
+        registry.register("ipfs://yield-agent");
+
+        vm.prank(operator);
+        slashPool.deposit(500e6);
+
+        vm.prank(address(0xBAD));
+        vm.expectRevert(SlashPool.UnauthorizedMonitor.selector);
+        slashPool.submitViolation(operator, sarah, 100e6, keccak256("fake proof"));
+    }
+
+    function testOwnerCanRevokeMonitor() public {
+        slashPool.setMonitorAuthorization(monitor, false);
+
+        vm.prank(operator);
+        registry.register("ipfs://yield-agent");
+
+        vm.prank(operator);
+        slashPool.deposit(500e6);
+
+        vm.prank(monitor);
+        vm.expectRevert(SlashPool.UnauthorizedMonitor.selector);
+        slashPool.submitViolation(operator, sarah, 100e6, keccak256("revoked monitor"));
+    }
+
+    function testNonOwnerCannotAuthorizeMonitor() public {
+        vm.prank(monitor);
+        vm.expectRevert(SlashPool.UnauthorizedOwner.selector);
+        slashPool.setMonitorAuthorization(address(0xC0FFEE), true);
     }
 
     function testRejectsDuplicateProof() public {

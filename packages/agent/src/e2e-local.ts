@@ -128,6 +128,12 @@ async function main() {
       client: { public: publicClient, wallet: deployerClient },
     });
     await transact(await identityAsDeployer.write.setSlashRecorder([slashPool]));
+    const slashAsDeployer = getContract({
+      address: slashPool,
+      abi: slashPoolArtifact.abi,
+      client: { public: publicClient, wallet: deployerClient },
+    });
+    await transact(await slashAsDeployer.write.setMonitorAuthorization([accounts.monitor.address, true]));
 
     const identityAsAgent = getContract({
       address: identity,

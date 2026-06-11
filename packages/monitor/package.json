@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "demo": "tsx src/demo.ts"
+    "demo": "tsx src/demo.ts",
+    "submit": "tsx src/submit.ts",
+    "serve": "tsx src/server.ts"
   },
   "dependencies": {
     "viem": "^2.21.54",

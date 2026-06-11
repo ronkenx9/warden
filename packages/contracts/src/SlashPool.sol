@@ -8,11 +8,14 @@ import {AgentIdentityRegistry} from "./AgentIdentityRegistry.sol";
 contract SlashPool {
     using SafeERC20 for IERC20;
 
+    error UnauthorizedOwner();
+    error UnauthorizedMonitor();
     error InsufficientStake();
     error ProofAlreadyUsed();
     error InvalidAmount();
     error InvalidRecipient();
 
+    event MonitorAuthorizationSet(address indexed monitor, bool authorized);
     event Staked(address indexed operator, uint256 amount);
     event Slashed(
         address indexed operator,
@@ -24,13 +27,29 @@ contract SlashPool {
 
     IERC20 public immutable collateral;
     AgentIdentityRegistry public immutable identityRegistry;
+    address public immutable owner;
 
+    mapping(address monitor => bool authorized) public authorizedMonitors;
     mapping(address operator => uint256 amount) public stakeOf;
     mapping(bytes32 proofHash => bool used) public usedProofs;
 
     constructor(IERC20 collateral_, AgentIdentityRegistry identityRegistry_) {
         collateral = collateral_;
         identityRegistry = identityRegistry_;
+        owner = msg.sender;
+        authorizedMonitors[msg.sender] = true;
+        emit MonitorAuthorizationSet(msg.sender, true);
+    }
+
+    function setMonitorAuthorization(address monitor, bool authorized) external {
+        if (msg.sender != owner) {
+            revert UnauthorizedOwner();
+        }
+        if (monitor == address(0)) {
+            revert InvalidRecipient();
+        }
+        authorizedMonitors[monitor] = authorized;
+        emit MonitorAuthorizationSet(monitor, authorized);
     }
 
     function deposit(uint256 amount) external {
@@ -44,6 +63,9 @@ contract SlashPool {
     }
 
     function submitViolation(address operator, address beneficiary, uint256 amount, bytes32 proofHash) external {
+        if (!authorizedMonitors[msg.sender]) {
+            revert UnauthorizedMonitor();
+        }
         if (amount == 0) {
             revert InvalidAmount();
         }
