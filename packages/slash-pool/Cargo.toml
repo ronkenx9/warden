@@ -19,6 +19,9 @@ alloy-primitives = "1.5.7"
 alloy-sol-types = "1.5.7"
 stylus-sdk = { version = "0.10.7", optional = true }
 
+[patch.crates-io]
+stylus-sdk = { path = "vendor/stylus-sdk-0.10.7" }
+
 [profile.release]
 codegen-units = 1
 strip = true

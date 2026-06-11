@@ -1,0 +1,62 @@
+[package]
+name = "stylus-sdk"
+keywords = ["arbitrum", "ethereum", "stylus", "alloy"]
+description = "Rust smart contracts with Arbitrum Stylus"
+readme = "../README.md"
+
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+version.workspace = true
+
+[dependencies]
+alloy-primitives.workspace = true
+alloy-sol-types.workspace = true
+cfg-if.workspace = true
+clap.workspace = true
+derivative.workspace = true
+hex = { workspace = true, default-features = false, features = ["alloc"] }
+keccak-const.workspace = true
+keccak = ">=0.1.6, <0.2"
+
+# local deps
+mini-alloc = { workspace = true, optional = true }
+stylus-proc.workspace = true
+stylus-core.workspace = true
+# ruint 1.17 introduced a const assertion in to_le_bytes that breaks
+# Uint<8,1>::to_le_bytes::<32>() used in storage encoding. Pin to 1.16.x
+# until the SDK's storage code is updated to match.
+ruint = { version = ">=1.16, <1.17", default-features = false }
+branches = { version = "0.4", default-features = false }
+rclite = "0.4"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+alloy-primitives = { workspace = true, features = ["native-keccak"] }
+
+# Ensure these dependencies won't be included in wasm32 target
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+rclite = { workspace = true, optional = true }
+stylus-test = { workspace = true, optional = true }
+
+[dev-dependencies]
+paste.workspace = true
+sha3.workspace = true
+alloy-primitives = { workspace = true, default-features = false, features=["tiny-keccak"] }
+stylus-sdk = { workspace = true, features = ["stylus-test"] }
+
+[package.metadata.docs.rs]
+features = ["default", "docs", "debug", "export-abi", "stylus-test"]
+
+[features]
+default = ["mini-alloc"]
+export-abi = ["debug", "stylus-proc/export-abi", "alloy-primitives/tiny-keccak"]
+debug = []
+docs = []
+hostio = []
+mini-alloc = ["dep:mini-alloc"]
+stylus-test = ["dep:stylus-test", "dep:rclite", "stylus-proc/stylus-test"]
+# Deprecated: this guard is redundant (cache flushing provides reentrancy safety)
+# and blocks use cases that require reentrant calls. Will be removed in a future
+# major release.
+reentrant = ["stylus-proc/reentrant", "stylus-core/reentrant", "stylus-test/reentrant"]
