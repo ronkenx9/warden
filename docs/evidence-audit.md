@@ -26,7 +26,7 @@ This audit maps the PRD promises to the strongest current evidence in the repo o
 | Rust/Stylus Slash Pool exists and compiles to WASM | Done | `packages/slash-pool`, `pnpm stylus:check`, generated `ISlashPoolStylus.sol` | None for compile/check evidence. |
 | Rust/Stylus Slash Pool is deployed/broadcast | Done | Robinhood Stylus address `0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8`, deploy tx `0xd4fdf1266b5ebd6c4ef74e6ee473d3986b9af3a529f9998baf16a924c94166dc`, activation tx `0x2971f26a31e8221e166ed29dbe3f1fb19188d01780dfaaf7aa887e5d45161a8c` | None for Robinhood testnet Stylus. |
 | Deployed on Robinhood Chain testnet | Done | `docs/deployments/robinhood-testnet-46630.md`, verified Blockscout links, `pnpm status:robinhood` | None for Solidity stack. |
-| Deployed on Arbitrum One | Open | No current Arbitrum One deployment artifact in repo | Deploy or revise submission claim to Robinhood Chain plus Stylus check/Sepolia if Arbitrum One is not used. |
+| Deployed on Arbitrum One | Done | Arbitrum One demo stack recorded in `docs/deployments/arbitrum-one-42161.md` and `docs/deployments/arbitrum-one-42161.json`; code reads confirmed non-empty bytecode for WARDENVault and SlashPool | None for mock demo stack. |
 | Dashboard and agent marketplace exist for demo | Done | `packages/dashboard`, `pnpm build`, dashboard copy references official Robinhood TSLA stack | Run `pnpm dev` for recording. |
 | Adversarial fuzzing documented | Partial | `packages/contracts/test/WARDENVaultFuzz.t.sol` and submission evidence matrix mention fuzz tests | Add a short fuzzing note to the final writeup if judges expect prose. |
 
