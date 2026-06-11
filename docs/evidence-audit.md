@@ -14,7 +14,7 @@ This audit maps the PRD promises to the strongest current evidence in the repo o
 
 | Requirement | Status | Evidence | Remaining Work |
 | --- | --- | --- | --- |
-| Agent Vault wraps tokenized stock assets as ERC-4626 shares | Done | `packages/contracts/src/WARDENVault.sol`, Foundry vault tests, verified Robinhood vault `0x5e8b55278FC2c1d0Ddb29A8973Bbba9f5CD55c98` | None for Robinhood TSLA vault. |
+| Agent Vault wraps tokenized stock assets as ERC-4626 shares | Done | `packages/contracts/src/WARDENVault.sol`, Foundry vault tests, hardened Robinhood vault `0x72E59162C013864AF1e150fbe12e454A99aF7412` with 1 TSLA deposited | None for Robinhood TSLA vault. |
 | Vault enforces policy at contract boundary before agent execution | Done | `WARDENVault.execute`, `testRejectsBlockedCETWindow`, `testRejectsTradeValueAboveLimit`, `testRejectsWrongAsset`, `testRejectedTradeDoesNotMoveFunds` | Capture live blocked execution for submission recording. |
 | One signed human-readable policy activates delegated agent session | Done | `PermissionEngine.sol`, EIP-712 typed-data flow in tests and `packages/agent/src/live-robinhood.ts` | Record MetaMask/human-readable signature path if UI demo needs wallet capture. |
 | Agent can execute only as delegated caller | Done | `testRejectsUnauthorizedAgent`, `testFuzzOnlyDelegatedAgentCanExecute` | None. |
@@ -32,15 +32,15 @@ This audit maps the PRD promises to the strongest current evidence in the repo o
 
 ## Current Live Robinhood Evidence
 
-Official-token stack:
+Hardened official-token stack:
 
 | Contract | Address |
 | --- | --- |
-| PermissionEngine | `0xd63eFdD5F4774f48F678bD9d12A3cE85c758C428` |
-| WARDENVault | `0x5e8b55278FC2c1d0Ddb29A8973Bbba9f5CD55c98` |
-| AgentIdentityRegistry | `0x68c451578B0E70e19A9369146061b5c311387cD3` |
-| SlashPool | `0xE9F0F8BE0B079d5A910e651aF62A1a3756057Dc8` |
-| MockRouter | `0x1E1e8528760B310d0b23b32ee9B5a0025a280FF7` |
+| PermissionEngine | `0x049527f5331FaeA8f0e9E86be8FDdCB86BdeE1ba` |
+| WARDENVault | `0x72E59162C013864AF1e150fbe12e454A99aF7412` |
+| AgentIdentityRegistry | `0x4D566c927d0B4d40AcC880b9729d8c5D905867D1` |
+| SlashPool | `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE` |
+| Stylus SlashPool | `0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8` |
 
 Official Robinhood Chain tokens:
 
@@ -81,8 +81,9 @@ pnpm live:robinhood
 pnpm live:robinhood:slash
 ```
 
-Keep the submission honest if the final two open items remain unresolved:
+Current claim boundary:
 
-- Say the Solidity WARDEN stack is live and verified on Robinhood Chain.
-- Say the Rust/Stylus Slash Pool passes WASM build and activation validation, but is not broadcast until deployment config is resolved.
-- Do not claim Arbitrum One deployment unless an actual address and explorer link are added.
+- Say the Solidity WARDEN stack is live and verified on Robinhood Chain testnet with official TSLA/USDG.
+- Say the Rust/Stylus Slash Pool is deployed and activated on Robinhood Chain testnet.
+- Say the Arbitrum One deployment is a mainnet demo stack that uses mock tokenized stock/collateral assets because Robinhood's official stock tokens live on Robinhood Chain.
+- Do not claim retail production readiness until independent audit, legal/compliance review, key management, and operational monitoring are complete.
