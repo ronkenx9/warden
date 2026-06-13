@@ -196,6 +196,7 @@ async function main() {
     const permissionArtifact = await artifact("PermissionEngine.sol/PermissionEngine.json");
     const vaultArtifact = await artifact("WARDENVault.sol/WARDENVault.json");
     const identityArtifact = await artifact("AgentIdentityRegistry.sol/AgentIdentityRegistry.json");
+    const monitorRegistryArtifact = await artifact("MonitorRegistry.sol/MonitorRegistry.json");
     const slashArtifact = await artifact("SlashPool.sol/SlashPool.json");
 
     console.log(`\nWARDEN swarm: deploying shared stack on Anvil (agents=${AGENT_COUNT}, rounds=${ROUNDS}, seed=${SEED}).`);
@@ -206,7 +207,8 @@ async function main() {
     const permissionEngine = await deploy("PermissionEngine", permissionArtifact);
     const vault = await deploy("WARDENVault", vaultArtifact, [tsla, "WARDEN TSLA Vault", "wTSLA", permissionEngine]);
     const identity = await deploy("AgentIdentityRegistry", identityArtifact);
-    const slashPool = await deploy("SlashPool", slashArtifact, [usdc, identity]);
+    const monitorRegistry = await deploy("MonitorRegistry", monitorRegistryArtifact);
+    const slashPool = await deploy("SlashPool", slashArtifact, [usdc, identity, monitorRegistry]);
 
     const tslaW = getContract({ address: tsla, abi: erc20.abi, client: { public: publicClient, wallet: deployerClient } });
     const amdW = getContract({ address: amd, abi: erc20.abi, client: { public: publicClient, wallet: deployerClient } });
@@ -558,7 +560,7 @@ async function main() {
       }));
 
     const snapshot = {
-      generatedAt: new Date().toISOString(),
+      generatedAt: process.env.WARDEN_SWARM_GENERATED_AT ?? "2026-06-12T00:00:00.000Z",
       seed: SEED,
       agentCount: AGENT_COUNT,
       rounds: ROUNDS,

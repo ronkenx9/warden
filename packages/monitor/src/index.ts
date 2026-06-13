@@ -80,14 +80,19 @@ export function verifyProof(proof: ViolationProof): boolean {
   return createViolationProof(proof).proofHash === proof.proofHash;
 }
 
-export function quoteMonitorReward(resource: string, usdc: Address, payTo: Address): X402Quote {
+export function quoteMonitorReward(
+  resource: string,
+  usdc: Address,
+  payTo: Address,
+  network = "eip155:42161",
+): X402Quote {
   return {
     status: 402,
     resource,
     accepts: [
       {
         scheme: "exact",
-        network: "eip155:42161",
+        network,
         asset: usdc,
         amount: "1000000",
         payTo,

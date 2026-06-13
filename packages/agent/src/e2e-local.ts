@@ -106,6 +106,7 @@ async function main() {
     const permissionArtifact = await artifact("PermissionEngine.sol/PermissionEngine.json");
     const vaultArtifact = await artifact("WARDENVault.sol/WARDENVault.json");
     const identityArtifact = await artifact("AgentIdentityRegistry.sol/AgentIdentityRegistry.json");
+    const monitorRegistryArtifact = await artifact("MonitorRegistry.sol/MonitorRegistry.json");
     const slashPoolArtifact = await artifact("SlashPool.sol/SlashPool.json");
 
     console.log("WARDEN local E2E: deploying demo stack on Anvil.");
@@ -115,7 +116,8 @@ async function main() {
     const permissionEngine = await deploy("PermissionEngine", permissionArtifact);
     const vault = await deploy("WARDENVault", vaultArtifact, [tsla, "WARDEN TSLA Vault", "wTSLA", permissionEngine]);
     const identity = await deploy("AgentIdentityRegistry", identityArtifact);
-    const slashPool = await deploy("SlashPool", slashPoolArtifact, [usdc, identity]);
+    const monitorRegistry = await deploy("MonitorRegistry", monitorRegistryArtifact);
+    const slashPool = await deploy("SlashPool", slashPoolArtifact, [usdc, identity, monitorRegistry]);
 
     const tslaContract = getContract({ address: tsla, abi: mockErc20.abi, client: { public: publicClient, wallet: deployerClient } });
     const usdcContract = getContract({ address: usdc, abi: mockErc20.abi, client: { public: publicClient, wallet: deployerClient } });

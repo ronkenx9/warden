@@ -3,12 +3,14 @@ pragma solidity ^0.8.24;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {AgentIdentityRegistry} from "./AgentIdentityRegistry.sol";
+import {MonitorRegistry} from "./MonitorRegistry.sol";
 
-contract SlashPool {
+contract SlashPool is Ownable2Step {
     using SafeERC20 for IERC20;
 
-    error UnauthorizedOwner();
     error UnauthorizedMonitor();
     error InsufficientStake();
     error ProofAlreadyUsed();
@@ -27,24 +29,23 @@ contract SlashPool {
 
     IERC20 public immutable collateral;
     AgentIdentityRegistry public immutable identityRegistry;
-    address public immutable owner;
+    MonitorRegistry public immutable monitorRegistry;
 
     mapping(address monitor => bool authorized) public authorizedMonitors;
     mapping(address operator => uint256 amount) public stakeOf;
     mapping(bytes32 proofHash => bool used) public usedProofs;
 
-    constructor(IERC20 collateral_, AgentIdentityRegistry identityRegistry_) {
+    constructor(IERC20 collateral_, AgentIdentityRegistry identityRegistry_, MonitorRegistry monitorRegistry_)
+        Ownable(msg.sender)
+    {
         collateral = collateral_;
         identityRegistry = identityRegistry_;
-        owner = msg.sender;
+        monitorRegistry = monitorRegistry_;
         authorizedMonitors[msg.sender] = true;
         emit MonitorAuthorizationSet(msg.sender, true);
     }
 
-    function setMonitorAuthorization(address monitor, bool authorized) external {
-        if (msg.sender != owner) {
-            revert UnauthorizedOwner();
-        }
+    function setMonitorAuthorization(address monitor, bool authorized) external onlyOwner {
         if (monitor == address(0)) {
             revert InvalidRecipient();
         }
@@ -63,7 +64,7 @@ contract SlashPool {
     }
 
     function submitViolation(address operator, address beneficiary, uint256 amount, bytes32 proofHash) external {
-        if (!authorizedMonitors[msg.sender]) {
+        if (!_canSubmit(msg.sender)) {
             revert UnauthorizedMonitor();
         }
         if (amount == 0) {
@@ -85,5 +86,15 @@ contract SlashPool {
         collateral.safeTransfer(beneficiary, amount);
 
         emit Slashed(operator, beneficiary, msg.sender, amount, proofHash);
+    }
+
+    function _canSubmit(address monitor) private view returns (bool) {
+        if (authorizedMonitors[monitor]) {
+            return true;
+        }
+        if (address(monitorRegistry) == address(0)) {
+            return false;
+        }
+        return monitorRegistry.isActiveMonitor(monitor);
     }
 }

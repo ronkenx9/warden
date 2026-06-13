@@ -9,7 +9,8 @@ WARDEN moves AI-agent portfolio rules on-chain. A user signs one policy, the age
 - `WARDENVault.sol`: ERC-4626 vault wrapper for tokenized stock assets.
 - `PermissionEngine.sol`: EIP-712 policy verifier for one-signature delegated agent sessions.
 - `AgentIdentityRegistry.sol`: ERC-8004-style ERC-721 agent identity registry with URI and metadata support.
-- `SlashPool.sol`: executable Solidity slashing path that moves USDC collateral to affected users and records agent violations.
+- `MonitorRegistry.sol`: self-registration surface for independent monitor runners, with owner suspension for abuse.
+- `SlashPool.sol`: executable Solidity slashing path that moves USDC collateral to affected users, accepts active registered monitors, and records agent violations.
 - `packages/slash-pool`: Rust/Stylus slashing contract with native core tests, WASM build, and exported Solidity ABI.
 - `packages/monitor`: x402-shaped paid monitor quote, payment-header validation, proof hashing, and slash submission.
 - `packages/dashboard`: local dashboard and agent marketplace for the hackathon demo.
@@ -33,6 +34,8 @@ pnpm preflight:robinhood
 pnpm status:robinhood
 pnpm live:robinhood
 pnpm live:robinhood:slash
+pnpm deploy:timelock
+pnpm admin:transfer
 pnpm dev
 pnpm stylus:check
 ```
@@ -67,7 +70,8 @@ Rust/Stylus verification requires Rust 1.88+, `rustup`, `cargo-stylus`, and `was
 - nonce replay prevention
 - agent NFT registration, URI updates, metadata, reserved wallet metadata, and wallet reset on transfer
 - monitor-submitted slashing, duplicate proof rejection, over-slash rejection, and reputation proof recording
-- x402-shaped monitor quote/payment validation before proof submission
+- registered monitor submission, monitor suspension, and two-step SlashPool ownership transfer
+- x402-shaped monitor quote/payment validation and ERC-20 transfer settlement reconciliation before proof submission
 - adversarial fuzzing for limit checks, blocked-window enforcement, allowed-window execution, and delegated caller restrictions
 - local Anvil E2E for the full Sarah/YieldAgent/monitor/slash/reputation path
 - Rust/Stylus Slash Pool native state-machine tests, WASM build, and ABI export

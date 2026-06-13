@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { quoteMonitorReward, verifyX402Payment } from "./index.js";
-import { loadDotEnv, monitorQuoteConfig, submitViolationFromEnv } from "./live-submit.js";
+import { loadDotEnv, monitorQuoteConfig, submitViolationFromEnv, verifyX402SettlementFromEnv } from "./live-submit.js";
 
 type Json = Record<string, unknown>;
 
@@ -44,20 +44,25 @@ const server = createServer(async (req, res) => {
 
     if (req.method === "GET" && req.url === "/quote") {
       const quote = monitorQuoteConfig();
-      send(res, 402, quoteMonitorReward(quote.resource, quote.asset, quote.payTo));
+      send(res, 402, quoteMonitorReward(quote.resource, quote.asset, quote.payTo, quote.network));
       return;
     }
 
     if (req.method === "POST" && req.url === "/violations") {
       const quote = monitorQuoteConfig();
-      const paymentQuote = quoteMonitorReward(quote.resource, quote.asset, quote.payTo);
+      const paymentQuote = quoteMonitorReward(quote.resource, quote.asset, quote.payTo, quote.network);
       if (!acceptUnpaid && !req.headers["x-payment"]) {
         send(res, 402, paymentQuote);
         return;
       }
+      let settlement: Awaited<ReturnType<typeof verifyX402SettlementFromEnv>> | undefined;
       if (!acceptUnpaid) {
+        const paymentHeader = String(req.headers["x-payment"]);
         try {
-          verifyX402Payment(String(req.headers["x-payment"]), paymentQuote);
+          verifyX402Payment(paymentHeader, paymentQuote);
+          if (process.env.WARDEN_SKIP_X402_SETTLEMENT_CHECK !== "1") {
+            settlement = await verifyX402SettlementFromEnv(paymentHeader);
+          }
         } catch (error) {
           send(res, 402, {
             error: error instanceof Error ? error.message : String(error),
@@ -69,7 +74,7 @@ const server = createServer(async (req, res) => {
 
       const body = await readJson(req);
       const result = await submitViolationFromEnv(bodyEnv(body));
-      send(res, 202, { status: "submitted", ...result });
+      send(res, 202, { status: "submitted", settlement, ...result });
       return;
     }
 
@@ -81,5 +86,5 @@ const server = createServer(async (req, res) => {
 
 server.listen(port, "127.0.0.1", () => {
   console.log(`WARDEN monitor listening on http://127.0.0.1:${port}`);
-  console.log("POST /violations requires x-payment unless WARDEN_ACCEPT_UNPAID_MONITOR_REQUESTS=1.");
+  console.log("POST /violations requires a settled x-payment unless WARDEN_ACCEPT_UNPAID_MONITOR_REQUESTS=1.");
 });

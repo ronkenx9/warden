@@ -32,7 +32,9 @@ For the stricter requirement-by-requirement status, use `docs/evidence-audit.md`
 | Blocked window handles midnight wrap | `testRejectsBlockedCETWindow`, `testFuzzRejectsEveryMinuteInsideMidnightWrappedBlockedWindow` |
 | Slashing pays affected user | `testMonitorSlashesOperatorAndUpdatesReputation` |
 | Reputation updates on-chain | `testMonitorSlashesOperatorAndUpdatesReputation`, `AgentIdentityRegistry.violationProof` |
-| Monitor proof is x402-shaped and payment-gated | `packages/monitor/src/index.ts`, `packages/monitor/src/server.ts`, `packages/monitor/src/market.test.ts`, `packages/monitor/src/demo.ts` |
+| Monitor proof is x402-shaped and settlement-gated | `packages/monitor/src/index.ts`, `packages/monitor/src/live-submit.ts`, `packages/monitor/src/server.ts`, `packages/monitor/src/market.test.ts`, `packages/monitor/src/demo.ts` |
+| Monitor runners can self-register | `packages/contracts/src/MonitorRegistry.sol`, `testRegisteredMonitorCanSubmitViolation`, `testSuspendedRegisteredMonitorCannotSubmitViolation` |
+| Production admin path exists | `DeployAdminTimelock.s.sol`, `TransferProductionOwnership.s.sol`, `testOwnerTransferRequiresPendingOwnerAcceptance` |
 | Stylus Slash Pool builds | `pnpm stylus:check`, `packages/slash-pool/ISlashPoolStylus.sol` |
 | Agent calls execute end-to-end | `pnpm e2e` / `packages/agent/src/e2e-local.ts` |
 | Dashboard exists for recording | `packages/dashboard` and `pnpm dev` |
@@ -63,5 +65,5 @@ For the stricter requirement-by-requirement status, use `docs/evidence-audit.md`
 - Live USDG slash/reputation evidence is recorded against agent identity id `1`.
 - Rust/Stylus SlashPool is deployed and activated on Robinhood Chain testnet.
 - Emergency pause blocks policy activation and agent execution while preserving user withdrawals; production still needs multisig/timelock ownership.
-- The x402 monitor is a payment-gated proof-submission service for the demo, not yet a decentralized production runner marketplace.
+- The repo includes a self-registration path for monitor runners and x402 payment settlement reconciliation; live production still needs independent third-party operators.
 - The dashboard is a local demo surface, not a production portfolio application.

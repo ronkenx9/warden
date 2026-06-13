@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { encodeAbiParameters, encodeEventTopics, parseAbiParameters, parseAbiItem, type Hex } from "viem";
 import {
   createViolationProof,
   encodeX402Payment,
@@ -7,6 +8,7 @@ import {
   verifyX402Payment,
   type X402PaymentPayload,
 } from "./index.js";
+import { paymentReceiptHasMatchingTransfer } from "./live-submit.js";
 
 const quote = quoteMonitorReward(
   "/violations",
@@ -29,6 +31,27 @@ const payment: X402PaymentPayload = {
 
 const encoded = encodeX402Payment(payment);
 assert.equal(verifyX402Payment(encoded, quote).payload.txHash, payment.payload.txHash);
+
+const transferEvent = parseAbiItem("event Transfer(address indexed from, address indexed to, uint256 value)");
+const matchingPaymentLog = {
+  address: payment.payload.asset,
+  topics: encodeEventTopics({
+    abi: [transferEvent],
+    eventName: "Transfer",
+    args: {
+      from: "0x4444444444444444444444444444444444444444",
+      to: payment.payload.payTo,
+    },
+  }) as readonly Hex[],
+  data: encodeAbiParameters(parseAbiParameters("uint256"), [BigInt(payment.payload.amount)]),
+};
+assert.equal(paymentReceiptHasMatchingTransfer(payment, [matchingPaymentLog]), true);
+
+const underpaidLog = {
+  ...matchingPaymentLog,
+  data: encodeAbiParameters(parseAbiParameters("uint256"), [BigInt(payment.payload.amount) - 1n]),
+};
+assert.equal(paymentReceiptHasMatchingTransfer(payment, [underpaidLog]), false);
 
 const mismatchedPayment = encodeX402Payment({
   ...payment,

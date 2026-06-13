@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 import {Script} from "forge-std/Script.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {AgentIdentityRegistry} from "../src/AgentIdentityRegistry.sol";
+import {MonitorRegistry} from "../src/MonitorRegistry.sol";
 import {PermissionEngine} from "../src/PermissionEngine.sol";
 import {SlashPool} from "../src/SlashPool.sol";
 import {WARDENVault} from "../src/WARDENVault.sol";
@@ -21,6 +22,7 @@ contract DeployOfficial is Script {
             PermissionEngine permissionEngine,
             WARDENVault vault,
             AgentIdentityRegistry identityRegistry,
+            MonitorRegistry monitorRegistry,
             SlashPool slashPool
         )
     {
@@ -34,7 +36,8 @@ contract DeployOfficial is Script {
         permissionEngine = new PermissionEngine();
         vault = new WARDENVault(IERC20(asset), name, symbol, permissionEngine);
         identityRegistry = new AgentIdentityRegistry();
-        slashPool = new SlashPool(IERC20(collateral), identityRegistry);
+        monitorRegistry = new MonitorRegistry();
+        slashPool = new SlashPool(IERC20(collateral), identityRegistry, monitorRegistry);
         identityRegistry.setSlashRecorder(address(slashPool));
 
         vm.stopBroadcast();

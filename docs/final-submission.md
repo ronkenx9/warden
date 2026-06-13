@@ -16,7 +16,7 @@ Agentic DeFi normally trusts the agent's own code to obey user limits. WARDEN mo
 
 The demo uses official Robinhood Chain testnet stock tokens and USDG contracts. Sarah deposits TSLA into WARDEN, signs a TSLA-only policy with a 50 EUR limit and 22:00-06:00 CET block, and YieldAgent attempts a blocked trade. `WARDENVault` rejects it with `TradingWindowClosed()`. A monitor packages the failed-call proof, `SlashPool` slashes the agent/operator collateral, and the agent's ERC-8004-style identity records the violation. Additional official-stock ERC-4626 vaults are live and funded for AMD, AMZN, PLTR, and NFLX.
 
-The monitor service is x402-shaped: `GET /quote` returns an exact-payment quote, `POST /violations` requires an `x-payment` header matching the quote before it reaches the proof submission path, and the same code path submits the resulting proof hash to `SlashPool.submitViolation`. This is enough for the buildathon proof, but it is not claimed as a production decentralized monitoring marketplace.
+The monitor service is x402-shaped: `GET /quote` returns an exact-payment quote, `POST /violations` requires an `x-payment` header matching the quote, reconciles the payment transaction against ERC-20 `Transfer` logs, and then submits the resulting proof hash to `SlashPool.submitViolation`. The production contract version also includes a `MonitorRegistry` so independent runners can self-register endpoint and payment metadata before submitting proofs.
 
 ## Built For
 
@@ -98,7 +98,7 @@ Then open `http://127.0.0.1:5173/`.
 
 ## What To Show In The Video
 
-1. `pnpm preflight:robinhood`: verified Robinhood TSLA/AMD/AMZN/PLTR/NFLX vaults, each with 1 official stock token deposited, each unpaused and owned by the expected deployer, SlashPool uses official USDG, registry points to SlashPool, and watched agent slash readiness.
+1. `pnpm preflight:robinhood`: verified Robinhood TSLA/AMD/AMZN/PLTR/NFLX vaults, each with 1 official stock token deposited, each unpaused and owned by the expected owner, SlashPool uses official USDG, registry points to SlashPool, and watched agent slash readiness.
 2. `pnpm test`: policy rules, revert cases, no-funds-moved check, fuzz tests, slash/reputation tests.
 3. `pnpm e2e`: local end-to-end Sarah/YieldAgent/monitor path with allowed trade, blocked trade, slash, and reputation update.
 4. `pnpm live:robinhood`: live Robinhood blocked execution reverting with `TradingWindowClosed()` and unchanged TSLA balances.
@@ -130,8 +130,8 @@ Adversarial fuzzing coverage is included in `packages/contracts/test/WARDENVault
 - Live USDG collateral is funded and the live slash/reputation proof has been recorded.
 - The Rust/Stylus Slash Pool is deployed and activated on Robinhood Chain testnet.
 - The Arbitrum One deployment is a mock demo stack. Do not describe it as wrapping official Robinhood stock tokens unless Robinhood publishes official stock contracts on Arbitrum One.
-- The x402 monitor is a payment-gated proof-submission service for the demo, not yet a decentralized runner marketplace with production settlement reconciliation.
-- Do not claim retail production readiness until audit, compliance review, production key management, multisig/timelock ownership transfer, and operations monitoring are complete.
+- The repo includes production admin/timelock scripts, `Ownable2Step` SlashPool ownership, monitor registry, and x402 settlement reconciliation.
+- Do not claim retail production readiness until external audit, external compliance review, live timelock ownership transfer, and independent monitor operators are complete.
 
 ## Closing Line
 

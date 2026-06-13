@@ -83,6 +83,10 @@ function loadDeploymentFromEnv(): Deployment {
   };
 }
 
+function expectedVaultOwner(deployment: Deployment): Address {
+  return addressEnv("WARDEN_EXPECTED_VAULT_OWNER", deployment.deployer);
+}
+
 async function loadDotEnv() {
   if (process.env.WARDEN_SKIP_DOTENV === "1") {
     return;
@@ -125,6 +129,7 @@ async function main() {
 
   const rpcUrl = process.env.ROBINHOOD_RPC_URL ?? "https://rpc.testnet.chain.robinhood.com";
   const deployment = loadDeploymentFromEnv();
+  const expectedOwner = expectedVaultOwner(deployment);
   const watchedAgent = (process.env.WARDEN_AGENT_ADDRESS ?? deployment.deployer) as Address;
   const publicClient = createPublicClient({ chain: robinhood, transport: http(rpcUrl) });
   const vaultArtifact = await artifact("WARDENVault.sol/WARDENVault.json");
@@ -298,6 +303,7 @@ async function main() {
   console.log(`Chain ID: ${chainId}`);
   console.log(`Block: ${blockNumber}`);
   console.log(`Deployer: ${deployment.deployer}`);
+  console.log(`Expected vault owner: ${expectedOwner}`);
   console.log(`Deployer ETH: ${formatEther(deployerEth)}`);
   console.log("Official stock token balances:");
   for (const stock of stockBalances) {
@@ -351,8 +357,8 @@ async function main() {
       vaultBalances.every((vault) => vault.paused === false),
     ],
     [
-      "all official stock vaults are owned by expected deployer",
-      vaultBalances.every((vault) => vault.owner.toLowerCase() === deployment.deployer.toLowerCase()),
+      "all official stock vaults are owned by expected owner",
+      vaultBalances.every((vault) => vault.owner.toLowerCase() === expectedOwner.toLowerCase()),
     ],
     ["slash pool uses official USDG", String(slashCollateral).toLowerCase() === deployment.usdg.toLowerCase()],
     ["registry points to slash pool", String(slashRecorder).toLowerCase() === deployment.slashPool.toLowerCase()],

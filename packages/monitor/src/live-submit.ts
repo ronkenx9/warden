@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import {
   createPublicClient,
   createWalletClient,
+  decodeEventLog,
   defineChain,
   formatUnits,
   getContract,
@@ -13,9 +14,21 @@ import {
   type Hex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { createViolationProof, type ViolationReason } from "./index.js";
+import {
+  createViolationProof,
+  quoteMonitorReward,
+  verifyX402Payment,
+  type ViolationReason,
+  type X402PaymentPayload,
+} from "./index.js";
 
 type Artifact = { abi: Abi };
+
+type SettlementLog = {
+  address: Address;
+  data: Hex;
+  topics: readonly Hex[];
+};
 
 export type SubmitViolationResult = {
   chainId: number;
@@ -88,12 +101,80 @@ export function monitorQuoteConfig(env: NodeJS.ProcessEnv = process.env): {
   resource: string;
   asset: Address;
   payTo: Address;
+  network: string;
 } {
+  const chainId = Number(env.WARDEN_CHAIN_ID ?? env.ROBINHOOD_CHAIN_ID ?? defaults.chainId);
   return {
     resource: env.WARDEN_MONITOR_RESOURCE ?? "/violations",
     asset: requiredAddress(env, "WARDEN_X402_ASSET", env.WARDEN_COLLATERAL ?? defaults.collateral),
     payTo: requiredAddress(env, "WARDEN_PAYMENT_RECEIVER", env.WARDEN_MONITOR_ADDRESS),
+    network: env.WARDEN_X402_NETWORK ?? `eip155:${chainId}`,
   };
+}
+
+export function paymentReceiptHasMatchingTransfer(payment: X402PaymentPayload, logs: readonly SettlementLog[]): boolean {
+  const transferEvent = {
+    type: "event",
+    name: "Transfer",
+    inputs: [
+      { indexed: true, name: "from", type: "address" },
+      { indexed: true, name: "to", type: "address" },
+      { indexed: false, name: "value", type: "uint256" },
+    ],
+  } as const;
+  const expectedAmount = BigInt(payment.payload.amount);
+
+  return logs.some((log) => {
+    if (log.address.toLowerCase() !== payment.payload.asset.toLowerCase()) return false;
+    if (log.topics.length === 0) return false;
+    try {
+      const topics = log.topics as [Hex, ...Hex[]];
+      const decoded = decodeEventLog({ abi: [transferEvent], data: log.data, topics });
+      if (decoded.eventName !== "Transfer") return false;
+      const args = decoded.args as { to: Address; value: bigint };
+      return args.to.toLowerCase() === payment.payload.payTo.toLowerCase() && args.value >= expectedAmount;
+    } catch {
+      return false;
+    }
+  });
+}
+
+export async function verifyX402SettlementFromEnv(
+  paymentHeader: string,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<{ txHash: Hex; blockNumber: string }> {
+  await loadDotEnv();
+
+  const quote = monitorQuoteConfig(env);
+  const payment = verifyX402Payment(paymentHeader, quoteMonitorReward(quote.resource, quote.asset, quote.payTo, quote.network));
+  const rpcUrl = env.WARDEN_RPC_URL ?? env.ROBINHOOD_RPC_URL ?? defaults.rpcUrl;
+  const chainId = Number(env.WARDEN_CHAIN_ID ?? env.ROBINHOOD_CHAIN_ID ?? defaults.chainId);
+  const chain = defineChain({
+    id: chainId,
+    name: env.WARDEN_CHAIN_NAME ?? defaults.chainName,
+    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+    rpcUrls: { default: { http: [rpcUrl] } },
+  });
+  const publicClient = createPublicClient({ chain, transport: http(rpcUrl) });
+  const receipt = await publicClient.getTransactionReceipt({ hash: payment.payload.txHash });
+  if (receipt.status !== "success") throw new Error(`x402 payment transaction failed: ${payment.payload.txHash}`);
+
+  const settled = paymentReceiptHasMatchingTransfer(payment, receipt.logs);
+
+  if (!settled) {
+    throw new Error(`x402 payment tx ${payment.payload.txHash} has no matching ERC20 Transfer to payment receiver`);
+  }
+
+  const minConfirmations = BigInt(env.WARDEN_X402_MIN_CONFIRMATIONS ?? "1");
+  if (minConfirmations > 0n) {
+    const latestBlock = await publicClient.getBlockNumber();
+    const confirmations = latestBlock >= receipt.blockNumber ? latestBlock - receipt.blockNumber + 1n : 0n;
+    if (confirmations < minConfirmations) {
+      throw new Error(`x402 payment has ${confirmations} confirmations; need ${minConfirmations}`);
+    }
+  }
+
+  return { txHash: payment.payload.txHash, blockNumber: receipt.blockNumber.toString() };
 }
 
 export async function submitViolationFromEnv(env: NodeJS.ProcessEnv = process.env): Promise<SubmitViolationResult> {

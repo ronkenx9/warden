@@ -114,7 +114,24 @@ Emergency controls:
 - `pause()` / `unpause()` are `onlyOwner`.
 - Pausing blocks `activatePolicy` and `execute`.
 - ERC-4626 withdrawals remain available while paused so users can exit during incidents.
-- `pnpm status:robinhood` checks that the current official vaults are unpaused and owned by the expected deployer.
+- `pnpm status:robinhood` checks that the current official vaults are unpaused and owned by the expected owner. Set `WARDEN_EXPECTED_VAULT_OWNER` after transferring to a timelock.
+
+Production admin handoff:
+
+```bash
+export WARDEN_TIMELOCK_MIN_DELAY=86400
+export WARDEN_TIMELOCK_PROPOSER=0x<multisig>
+export WARDEN_TIMELOCK_EXECUTOR=0x0000000000000000000000000000000000000000
+export WARDEN_TIMELOCK_ADMIN=0x<temporary-admin-multisig>
+pnpm deploy:timelock
+
+export WARDEN_PRODUCTION_OWNER=0x<timelock>
+export WARDEN_EXPECTED_VAULT_OWNER=0x<timelock>
+pnpm admin:transfer
+pnpm status:robinhood
+```
+
+The current demo SlashPool predates transferable ownership. Production deployments should use the current `SlashPool` contract, which uses `Ownable2Step`; after `pnpm admin:transfer`, the timelock must execute `acceptOwnership()`.
 
 ## Arbitrum Sepolia / Arbitrum One
 
@@ -153,7 +170,9 @@ STYLUS_ENDPOINT="$ARBITRUM_SEPOLIA_RPC_URL" pnpm stylus:deploy
 
 `pnpm stylus:deploy` runs Rust tests, builds the WASM, exports the ABI, broadcasts with `cargo stylus deploy`, and writes a durable deployment artifact under `packages/slash-pool/deployments/`.
 
-After deploying a SlashPool with monitor authorization enabled, authorize the monitor before it can submit slashes:
+After deploying a SlashPool, either authorize a known monitor or let the monitor self-register through `MonitorRegistry`.
+
+Authorize a known monitor:
 
 ```bash
 pnpm monitor:authorize
@@ -165,6 +184,8 @@ Required `.env` values:
 - `DEPLOYER_PRIVATE_KEY`
 - `WARDEN_SLASH_POOL`
 - `WARDEN_MONITOR_ADDRESS`
+
+Self-register a monitor runner through `MonitorRegistry.registerMonitor(paymentReceiver, endpointURI)`. Active registered monitors can submit violation proofs unless suspended by the production owner.
 
 ## Post-Deployment Smoke Test
 
@@ -196,12 +217,12 @@ For a monitor-runner flow, start the payment-gated service:
 pnpm monitor:serve
 ```
 
-`GET /quote` returns the x402-shaped payment quote. `POST /violations` submits a slash transaction after an `x-payment` header is present; set `WARDEN_ACCEPT_UNPAID_MONITOR_REQUESTS=1` only for local testing. The same submit path is available as a CLI:
+`GET /quote` returns the x402-shaped payment quote. `POST /violations` verifies that the `x-payment` header matches the quote, reconciles the payment transaction against ERC-20 `Transfer` logs, then submits the slash transaction. Set `WARDEN_ACCEPT_UNPAID_MONITOR_REQUESTS=1` only for local testing. Set `WARDEN_SKIP_X402_SETTLEMENT_CHECK=1` only for local header-validation demos. The same submit path is available as a CLI:
 
 ```bash
 pnpm monitor:submit
 ```
 
-## Current Deployment Gap
+## Current Deployment Boundary
 
-The current Robinhood Solidity deployment recorded in `docs/deployments/robinhood-testnet-46630.md` uses authorized monitors and paused-capable vaults. Production readiness still requires independent audit, compliance review, and transferring vault ownership from the deployer key to a multisig/timelock.
+The current Robinhood Solidity deployment recorded in `docs/deployments/robinhood-testnet-46630.md` uses authorized monitors and paused-capable vaults. The repo now includes the production admin, monitor registry, settlement reconciliation, and runbook paths. Retail production still requires external audit, external legal/compliance approval, and live operator setup.
