@@ -24,11 +24,11 @@ const policyRules = [
 
 const liveDeployment = [
   { label: "Chain", value: "Robinhood testnet 46630" },
-  { label: "TSLA Vault", value: "0x72E5...7412" },
-  { label: "AMD Vault", value: "0x1C03...9dF2" },
-  { label: "AMZN Vault", value: "0x1BC9...8E8F" },
-  { label: "PLTR Vault", value: "0xb11a...De4e" },
-  { label: "NFLX Vault", value: "0x4425...8603" },
+  { label: "TSLA Vault", value: "0x02e6...6Daf" },
+  { label: "AMD Vault", value: "0x7f8E...2092" },
+  { label: "AMZN Vault", value: "0x212f...526e" },
+  { label: "PLTR Vault", value: "0xb7cb...a20d" },
+  { label: "NFLX Vault", value: "0xAA97...77F9" },
   { label: "USDG Slash Pool", value: "0x6745...7bbE" },
 ];
 

@@ -10,6 +10,8 @@ The vault stores one active policy per owner. `activatePolicy` verifies an EIP-7
 
 Rejected requests use custom errors. The important safety property is that validation happens before external calls, so failed policy checks leave the vault and router balances unchanged.
 
+The current vault also has an owner-controlled emergency pause. Pausing blocks new policy activation and agent `execute` calls, but does not block ERC-4626 withdrawals, so users can exit while agent activity is frozen.
+
 ## Follow-On Primitives
 
 `AgentIdentityRegistry` follows the current ERC-8004 draft shape closely enough for the demo: agents are ERC-721 NFTs, `tokenURI` is the agent registration file URI, owners can set metadata, and the reserved `agentWallet` metadata is initialized to the owner and cleared on transfer.

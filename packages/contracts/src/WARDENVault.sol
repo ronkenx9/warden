@@ -5,10 +5,12 @@ import {ERC4626} from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.so
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {PermissionEngine} from "./PermissionEngine.sol";
 import {PolicyTypes} from "./PolicyTypes.sol";
 
-contract WARDENVault is ERC4626 {
+contract WARDENVault is ERC4626, Ownable, Pausable {
     using SafeERC20 for IERC20;
 
     error UnauthorizedAgent();
@@ -44,11 +46,20 @@ contract WARDENVault is ERC4626 {
     constructor(IERC20 asset_, string memory name_, string memory symbol_, PermissionEngine permissionEngine_)
         ERC4626(asset_)
         ERC20(name_, symbol_)
+        Ownable(msg.sender)
     {
         permissionEngine = permissionEngine_;
     }
 
-    function activatePolicy(PolicyTypes.Policy calldata policy, bytes calldata signature) external {
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+
+    function activatePolicy(PolicyTypes.Policy calldata policy, bytes calldata signature) external whenNotPaused {
         if (msg.sender != policy.owner || policy.owner == address(0) || policy.agent == address(0)) {
             revert InvalidPolicy();
         }
@@ -78,7 +89,11 @@ contract WARDENVault is ERC4626 {
         return policies[owner];
     }
 
-    function execute(address owner, PolicyTypes.TradeRequest calldata request) external returns (bytes memory result) {
+    function execute(address owner, PolicyTypes.TradeRequest calldata request)
+        external
+        whenNotPaused
+        returns (bytes memory result)
+    {
         PolicyTypes.Policy memory policy = policies[owner];
 
         if (msg.sender != policy.agent) {

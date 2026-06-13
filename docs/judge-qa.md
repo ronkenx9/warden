@@ -11,16 +11,18 @@ WARDEN removes the agent as the policy enforcement point. In most agentic DeFi p
 The Solidity WARDEN stack is live on Robinhood Chain testnet:
 
 - `PermissionEngine`: `0x049527f5331FaeA8f0e9E86be8FDdCB86BdeE1ba`
-- `TSLA WARDENVault`: `0x72E59162C013864AF1e150fbe12e454A99aF7412`
-- `AMD WARDENVault`: `0x1C03E8C2a46a2fEF43eE53dd10341806CC3f9dF2`
-- `AMZN WARDENVault`: `0x1BC9cAE1Fc191f7620BfD1a8463AeF76aD3d8E8F`
-- `PLTR WARDENVault`: `0xb11a205E3E1390D33184a7BF6403ef490feFDe4e`
-- `NFLX WARDENVault`: `0x4425A1c7561341ce196F3b792c2Cfc6cCbb78603`
+- `TSLA WARDENVault`: `0x02e658d8F20bbF94d85D0eCC0365Ab4aa5c26Daf`
+- `AMD WARDENVault`: `0x7f8E3269f6c2DE4394d46c3dacBF12DA21dd2092`
+- `AMZN WARDENVault`: `0x212f89c78f6E98AB82B76b9b9f3652b48a16526e`
+- `PLTR WARDENVault`: `0xb7cbF30123382E7d29E127e974b53868a16Aa20d`
+- `NFLX WARDENVault`: `0xAA976c519485465f299853019AA780AbD47F77F9`
 - `AgentIdentityRegistry`: `0x4D566c927d0B4d40AcC880b9729d8c5D905867D1`
 - `SlashPool`: `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE`
 - `Stylus SlashPool`: `0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8`
 
 The vault set wraps official Robinhood Chain testnet TSLA, AMD, AMZN, PLTR, and NFLX. Each vault currently holds `1` deposited stock token.
+
+Each current vault is paused-capable: `pause()` and `unpause()` are owner-only, pause blocks new policy activation and agent execution, and user withdrawals remain available.
 
 ## What is the exact user policy?
 
@@ -61,7 +63,7 @@ Live state:
 Yes. The signed Robinhood proof ran successfully. Current public reads show:
 
 - agent identity id: `1`
-- violation count: `1`
+- violation count: `2`
 - SlashPool stake: `0`
 - agent wallet USDG: `100`
 
@@ -87,7 +89,7 @@ Yes, as a mock demo stack on Arbitrum One mainnet. It proves the Solidity primit
 
 It runs the full non-secret evidence gate:
 
-- 27 Foundry tests
+- 35 Foundry tests
 - TypeScript/dashboard builds
 - agent demo
 - monitor demo
@@ -113,4 +115,4 @@ pnpm live:robinhood:slash
 
 Do not claim retail production readiness, audited contracts, decentralized monitor-market production operation, or official Robinhood stock support on Arbitrum One.
 
-The defensible claim is: WARDEN is live on Robinhood Chain for the Solidity multi-stock vault stack, live slash/reputation proof is recorded, Stylus is deployed/activated on Robinhood Chain, and Arbitrum One has a mock demo stack.
+The defensible claim is: WARDEN is live on Robinhood Chain for the paused-capable Solidity multi-stock vault stack, live slash/reputation proof is recorded, Stylus is deployed/activated on Robinhood Chain, and Arbitrum One has a mock demo stack.

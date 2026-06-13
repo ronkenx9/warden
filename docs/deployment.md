@@ -32,7 +32,7 @@ pnpm stylus:check
 
 Expected current evidence:
 
-- 27 Foundry tests pass.
+- 35 Foundry tests pass.
 - Dashboard production build completes.
 - Agent demo prints the allowed and blocked paths.
 - Monitor demo prints a valid local proof and `SlashPool.submitViolation` payload.
@@ -99,15 +99,22 @@ Required `.env` or exported values:
 - `WARDEN_VAULT_NAME`
 - `WARDEN_VAULT_SYMBOL`
 
-The current official-stock vaults on Robinhood Chain testnet are:
+The current official-stock vaults on Robinhood Chain testnet are the paused-capable vault set. Each vault currently holds `1` deposited stock token, is `paused=false`, and is owned by the canonical deployer. For production, transfer ownership to a multisig/timelock before user funds are accepted.
 
 | Stock | Token | Vault |
 | --- | --- | --- |
-| TSLA | `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E` | `0x72E59162C013864AF1e150fbe12e454A99aF7412` |
-| AMD | `0x71178BAc73cBeb415514eB542a8995b82669778d` | `0x1C03E8C2a46a2fEF43eE53dd10341806CC3f9dF2` |
-| AMZN | `0x5884aD2f920c162CFBbACc88C9C51AA75eC09E02` | `0x1BC9cAE1Fc191f7620BfD1a8463AeF76aD3d8E8F` |
-| PLTR | `0x1FBE1a0e43594b3455993B5dE5Fd0A7A266298d0` | `0xb11a205E3E1390D33184a7BF6403ef490feFDe4e` |
-| NFLX | `0x3b8262A63d25f0477c4DDE23F83cfe22Cb768C93` | `0x4425A1c7561341ce196F3b792c2Cfc6cCbb78603` |
+| TSLA | `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E` | `0x02e658d8F20bbF94d85D0eCC0365Ab4aa5c26Daf` |
+| AMD | `0x71178BAc73cBeb415514eB542a8995b82669778d` | `0x7f8E3269f6c2DE4394d46c3dacBF12DA21dd2092` |
+| AMZN | `0x5884aD2f920c162CFBbACc88C9C51AA75eC09E02` | `0x212f89c78f6E98AB82B76b9b9f3652b48a16526e` |
+| PLTR | `0x1FBE1a0e43594b3455993B5dE5Fd0A7A266298d0` | `0xb7cbF30123382E7d29E127e974b53868a16Aa20d` |
+| NFLX | `0x3b8262A63d25f0477c4DDE23F83cfe22Cb768C93` | `0xAA976c519485465f299853019AA780AbD47F77F9` |
+
+Emergency controls:
+
+- `pause()` / `unpause()` are `onlyOwner`.
+- Pausing blocks `activatePolicy` and `execute`.
+- ERC-4626 withdrawals remain available while paused so users can exit during incidents.
+- `pnpm status:robinhood` checks that the current official vaults are unpaused and owned by the expected deployer.
 
 ## Arbitrum Sepolia / Arbitrum One
 
@@ -197,4 +204,4 @@ pnpm monitor:submit
 
 ## Current Deployment Gap
 
-The Robinhood Solidity deployment currently recorded in `docs/deployments/robinhood-testnet-46630.md` predates monitor authorization. For a production-candidate deployment, redeploy with `pnpm deploy:official`, authorize a monitor with `pnpm monitor:authorize`, then run live slash through `pnpm live:robinhood:slash` or `pnpm monitor:submit`. The Rust/Stylus SlashPool has a broadcast helper, but production readiness still requires a successful `pnpm stylus:deploy` run and the resulting address artifact.
+The current Robinhood Solidity deployment recorded in `docs/deployments/robinhood-testnet-46630.md` uses authorized monitors and paused-capable vaults. Production readiness still requires independent audit, compliance review, and transferring vault ownership from the deployer key to a multisig/timelock.

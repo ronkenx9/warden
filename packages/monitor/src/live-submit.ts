@@ -30,7 +30,7 @@ const defaults = {
   rpcUrl: "https://rpc.testnet.chain.robinhood.com",
   chainId: 46_630,
   chainName: "Robinhood Chain Testnet",
-  vault: "0x72E59162C013864AF1e150fbe12e454A99aF7412",
+  vault: "0x02e658d8F20bbF94d85D0eCC0365Ab4aa5c26Daf",
   identityRegistry: "0x4D566c927d0B4d40AcC880b9729d8c5D905867D1",
   slashPool: "0x6745b7CE66756085cF1254d2028EB9e3b4407bbE",
   collateral: "0x7E955252E15c84f5768B83c41a71F9eba181802F",

@@ -37,7 +37,7 @@ const defaultDeployment = {
   nflx: "0x3b8262A63d25f0477c4DDE23F83cfe22Cb768C93",
   usdg: "0x7E955252E15c84f5768B83c41a71F9eba181802F",
   permissionEngine: "0x049527f5331FaeA8f0e9E86be8FDdCB86BdeE1ba",
-  vault: "0x72E59162C013864AF1e150fbe12e454A99aF7412",
+  vault: "0x02e658d8F20bbF94d85D0eCC0365Ab4aa5c26Daf",
   identityRegistry: "0x4D566c927d0B4d40AcC880b9729d8c5D905867D1",
   slashPool: "0x6745b7CE66756085cF1254d2028EB9e3b4407bbE",
   mockRouter: "0x55081762b22FDD6f3FACa9c1c153397352a9cf63",
@@ -52,11 +52,11 @@ const robinhoodStocks = [
 ] as const;
 
 const officialVaults = [
-  ["AMD", defaultDeployment.amd, "0x1C03E8C2a46a2fEF43eE53dd10341806CC3f9dF2"],
+  ["AMD", defaultDeployment.amd, "0x7f8E3269f6c2DE4394d46c3dacBF12DA21dd2092"],
   ["TSLA", defaultDeployment.tsla, defaultDeployment.vault],
-  ["AMZN", defaultDeployment.amzn, "0x1BC9cAE1Fc191f7620BfD1a8463AeF76aD3d8E8F"],
-  ["PLTR", defaultDeployment.pltr, "0xb11a205E3E1390D33184a7BF6403ef490feFDe4e"],
-  ["NFLX", defaultDeployment.nflx, "0x4425A1c7561341ce196F3b792c2Cfc6cCbb78603"],
+  ["AMZN", defaultDeployment.amzn, "0x212f89c78f6E98AB82B76b9b9f3652b48a16526e"],
+  ["PLTR", defaultDeployment.pltr, "0xb7cbF30123382E7d29E127e974b53868a16Aa20d"],
+  ["NFLX", defaultDeployment.nflx, "0xAA976c519485465f299853019AA780AbD47F77F9"],
 ] as const satisfies readonly (readonly [string, Address, Address])[];
 
 type Deployment = Record<keyof typeof defaultDeployment, Address>;
@@ -171,6 +171,16 @@ async function main() {
         functionName: "balanceOf",
         args: [deployment.deployer],
       })) as bigint,
+      owner: (await publicClient.readContract({
+        address: vault,
+        abi: vaultArtifact.abi,
+        functionName: "owner",
+      })) as Address,
+      paused: (await publicClient.readContract({
+        address: vault,
+        abi: vaultArtifact.abi,
+        functionName: "paused",
+      })) as boolean,
     })),
   );
 
@@ -299,7 +309,7 @@ async function main() {
       `- ${vault.symbol}: ${formatUnits(vault.totalAssets, 18)} deposited, ${formatUnits(
         vault.shares,
         18,
-      )} shares @ ${vault.vault}`,
+      )} shares, paused=${vault.paused}, owner=${vault.owner} @ ${vault.vault}`,
     );
   }
   console.log("");
@@ -336,6 +346,14 @@ async function main() {
       vaultBalances.every((vault) => vault.asset.toLowerCase() === vault.expectedAsset.toLowerCase()),
     ],
     ["all official stock vaults hold deposits", vaultBalances.every((vault) => vault.totalAssets > 0n)],
+    [
+      "all official stock vaults are unpaused",
+      vaultBalances.every((vault) => vault.paused === false),
+    ],
+    [
+      "all official stock vaults are owned by expected deployer",
+      vaultBalances.every((vault) => vault.owner.toLowerCase() === deployment.deployer.toLowerCase()),
+    ],
     ["slash pool uses official USDG", String(slashCollateral).toLowerCase() === deployment.usdg.toLowerCase()],
     ["registry points to slash pool", String(slashRecorder).toLowerCase() === deployment.slashPool.toLowerCase()],
     [

@@ -115,6 +115,71 @@ contract WARDENVaultTest is Test {
         assertEq(vault.totalAssets(), 90 ether);
     }
 
+    function testOnlyOwnerCanPause() public {
+        vm.prank(attacker);
+        vm.expectRevert(abi.encodeWithSignature("OwnableUnauthorizedAccount(address)", attacker));
+        vault.pause();
+
+        vault.pause();
+        assertTrue(vault.paused());
+    }
+
+    function testPausedVaultRejectsPolicyActivation() public {
+        PolicyTypes.Policy memory policy = _defaultPolicy(1);
+        bytes memory signature = _signPolicy(SARAH_KEY, policy);
+
+        vault.pause();
+
+        vm.prank(sarah);
+        vm.expectRevert(abi.encodeWithSignature("EnforcedPause()"));
+        vault.activatePolicy(policy, signature);
+    }
+
+    function testPausedVaultRejectsAgentExecutionWithoutMovingFunds() public {
+        _depositSarah(100 ether);
+        _activateDefaultPolicy(1);
+
+        uint256 vaultBefore = tsla.balanceOf(address(vault));
+        uint256 routerBefore = tsla.balanceOf(address(router));
+
+        vault.pause();
+
+        vm.warp(_cetTimestamp(12, 30));
+        vm.prank(agent);
+        vm.expectRevert(abi.encodeWithSignature("EnforcedPause()"));
+        vault.execute(sarah, _trade(address(tsla), 25e18, 10 ether));
+
+        assertEq(tsla.balanceOf(address(vault)), vaultBefore);
+        assertEq(tsla.balanceOf(address(router)), routerBefore);
+    }
+
+    function testPausedVaultStillAllowsUserWithdrawals() public {
+        _depositSarah(100 ether);
+
+        vault.pause();
+
+        vm.prank(sarah);
+        vault.withdraw(40 ether, sarah, sarah);
+
+        assertEq(vault.balanceOf(sarah), 60 ether);
+        assertEq(tsla.balanceOf(sarah), 940 ether);
+    }
+
+    function testUnpauseRestoresAgentExecution() public {
+        _depositSarah(100 ether);
+        _activateDefaultPolicy(1);
+
+        vault.pause();
+        vault.unpause();
+
+        vm.warp(_cetTimestamp(12, 30));
+        vm.prank(agent);
+        vault.execute(sarah, _trade(address(tsla), 25e18, 10 ether));
+
+        assertEq(tsla.balanceOf(address(router)), 10 ether);
+        assertEq(vault.totalAssets(), 90 ether);
+    }
+
     function testRejectsUnauthorizedAgent() public {
         _depositSarah(100 ether);
         _activateDefaultPolicy(1);

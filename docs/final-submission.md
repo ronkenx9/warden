@@ -12,7 +12,7 @@ WARDEN is a trustless ERC-4626 vault for tokenized stocks that enforces AI-agent
 
 ## Short Description
 
-Agentic DeFi normally trusts the agent's own code to obey user limits. WARDEN moves those limits into contracts. A retail user signs one EIP-712 policy for their tokenized-stock vault: allowed asset, max EUR trade size, delegated agent, expiry, and blocked CET trading window. The agent can call `execute()` only through the vault. If it violates the policy, the transaction reverts before external router calls and no user funds move.
+Agentic DeFi normally trusts the agent's own code to obey user limits. WARDEN moves those limits into contracts. A retail user signs one EIP-712 policy for their tokenized-stock vault: allowed asset, max EUR trade size, delegated agent, expiry, and blocked CET trading window. The agent can call `execute()` only through the vault. If it violates the policy, the transaction reverts before external router calls and no user funds move. The current vault code also has an emergency pause that blocks new policy activation and agent execution while preserving user withdrawals.
 
 The demo uses official Robinhood Chain testnet stock tokens and USDG contracts. Sarah deposits TSLA into WARDEN, signs a TSLA-only policy with a 50 EUR limit and 22:00-06:00 CET block, and YieldAgent attempts a blocked trade. `WARDENVault` rejects it with `TradingWindowClosed()`. A monitor packages the failed-call proof, `SlashPool` slashes the agent/operator collateral, and the agent's ERC-8004-style identity records the violation. Additional official-stock ERC-4626 vaults are live and funded for AMD, AMZN, PLTR, and NFLX.
 
@@ -36,11 +36,11 @@ Contracts:
 | Contract | Address |
 | --- | --- |
 | PermissionEngine | `0x049527f5331FaeA8f0e9E86be8FDdCB86BdeE1ba` |
-| TSLA WARDENVault | `0x72E59162C013864AF1e150fbe12e454A99aF7412` |
-| AMD WARDENVault | `0x1C03E8C2a46a2fEF43eE53dd10341806CC3f9dF2` |
-| AMZN WARDENVault | `0x1BC9cAE1Fc191f7620BfD1a8463AeF76aD3d8E8F` |
-| PLTR WARDENVault | `0xb11a205E3E1390D33184a7BF6403ef490feFDe4e` |
-| NFLX WARDENVault | `0x4425A1c7561341ce196F3b792c2Cfc6cCbb78603` |
+| TSLA WARDENVault | `0x02e658d8F20bbF94d85D0eCC0365Ab4aa5c26Daf` |
+| AMD WARDENVault | `0x7f8E3269f6c2DE4394d46c3dacBF12DA21dd2092` |
+| AMZN WARDENVault | `0x212f89c78f6E98AB82B76b9b9f3652b48a16526e` |
+| PLTR WARDENVault | `0xb7cbF30123382E7d29E127e974b53868a16Aa20d` |
+| NFLX WARDENVault | `0xAA976c519485465f299853019AA780AbD47F77F9` |
 | AgentIdentityRegistry | `0x4D566c927d0B4d40AcC880b9729d8c5D905867D1` |
 | SlashPool | `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE` |
 | Stylus SlashPool | `0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8` |
@@ -96,7 +96,7 @@ Then open `http://127.0.0.1:5173/`.
 
 ## What To Show In The Video
 
-1. `pnpm preflight:robinhood`: verified Robinhood TSLA/AMD/AMZN/PLTR/NFLX vaults, each with 1 official stock token deposited, SlashPool uses official USDG, registry points to SlashPool, and watched agent slash readiness.
+1. `pnpm preflight:robinhood`: verified Robinhood TSLA/AMD/AMZN/PLTR/NFLX vaults, each with 1 official stock token deposited, each unpaused and owned by the expected deployer, SlashPool uses official USDG, registry points to SlashPool, and watched agent slash readiness.
 2. `pnpm test`: policy rules, revert cases, no-funds-moved check, fuzz tests, slash/reputation tests.
 3. `pnpm e2e`: local end-to-end Sarah/YieldAgent/monitor path with allowed trade, blocked trade, slash, and reputation update.
 4. `pnpm live:robinhood`: live Robinhood blocked execution reverting with `TradingWindowClosed()` and unchanged TSLA balances.
@@ -109,6 +109,7 @@ Then open `http://127.0.0.1:5173/`.
 - Live evidence snapshot: `docs/live-evidence-2026-06-01.md`
 - Judge Q&A: `docs/judge-qa.md`
 - Recording runbook: `docs/recording-runbook.md`
+- Production readiness runbook: `docs/production-readiness.md`
 - Deployment details: `docs/deployments/robinhood-testnet-46630.md`
 - Architecture: `docs/architecture.md`
 - Demo script: `docs/demo-script.md`
@@ -125,7 +126,7 @@ Then open `http://127.0.0.1:5173/`.
 - Live USDG collateral is funded and the live slash/reputation proof has been recorded.
 - The Rust/Stylus Slash Pool is deployed and activated on Robinhood Chain testnet.
 - The Arbitrum One deployment is a mock demo stack. Do not describe it as wrapping official Robinhood stock tokens unless Robinhood publishes official stock contracts on Arbitrum One.
-- Do not claim retail production readiness until audit, compliance review, key management, and operations monitoring are complete.
+- Do not claim retail production readiness until audit, compliance review, production key management, multisig/timelock ownership transfer, and operations monitoring are complete.
 
 ## Closing Line
 

@@ -72,20 +72,41 @@ Additional official-stock ERC-4626 vaults deployed on 2026-06-13. Each vault reu
 | PLTR | `0x1FBE1a0e43594b3455993B5dE5Fd0A7A266298d0` | `0xb11a205E3E1390D33184a7BF6403ef490feFDe4e` | `0x867dee11e25551cde0b1d385c8b5de5edddabe4fca10e00e49328faa57e088de` | `0xbd60decdefb2c4e323bad2ef86b7da1d3877413d434a2d77a135fbde5af39e0e` | `0x54b201cfadc2c1dbfbdf3bdabdb8bef2052cfe1e19818925a7a0d1698887379d` |
 | NFLX | `0x3b8262A63d25f0477c4DDE23F83cfe22Cb768C93` | `0x4425A1c7561341ce196F3b792c2Cfc6cCbb78603` | `0x266ef5f9e0e38d35b470c98ae1aae80fbc8a113b344bfc1e341470a924dbff26` | `0x65a757e46ea7a427b269b3f2a95b3c8dd04cabef791104f1a86ba670d42d961e` | `0xf1a646a95ef080f21ebe0b58a7cca408f7bc62e732f726208be52863f1940063` |
 
-Live proof postconditions from `pnpm status:robinhood` at block `73624453`:
+## Current Paused-Capable Official Vault Set
+
+The current source-of-truth Robinhood vault set adds owner-controlled emergency pause/unpause to `WARDENVault`. Pause blocks policy activation and agent execution while preserving user withdrawals. Each vault is currently `paused=false`, owned by the canonical deployer `0x6727A665ef9257E2A4e9A4ED58B9136f62b0E1b1`, wraps the expected official Robinhood token, and holds `1` deposited stock token.
+
+| Stock | Token | Paused-capable vault | Vault Deploy Tx | Approval Tx | Deposit Tx |
+| --- | --- | --- | --- | --- | --- |
+| TSLA | `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E` | `0x02e658d8F20bbF94d85D0eCC0365Ab4aa5c26Daf` | `0xb2b80a9e6dddeced8ed6a403f64c3c5246d2b16365bccaa82543b5afada04084` | `0x41786e458fd6efdc63a8528688c5e584f44dcb04d110eb8b8919f546f472bba1` | `0x0d6332e30cd1c3ac59e62b25be26dd7b8e74cebcd5ea762a1a075efcaa9a25da` |
+| AMD | `0x71178BAc73cBeb415514eB542a8995b82669778d` | `0x7f8E3269f6c2DE4394d46c3dacBF12DA21dd2092` | `0x070d430bcfbe17a8fffeb5c0daf0140777f9e84b0eb8bc2abc2b89067dd606c6` | `0xfb38bb94444dc3709f2bb145db9ca77367c0f303620ff6c5081db344eae86e52` | `0xcee563b2f82322216a617a4a4579f59a5bd73c78455500dad8a90501b66e40f9` |
+| AMZN | `0x5884aD2f920c162CFBbACc88C9C51AA75eC09E02` | `0x212f89c78f6E98AB82B76b9b9f3652b48a16526e` | `0xbf271c0592ca6b26847e7a174bc8549d2a7aa322d70a374f5348f81221ad0a2f` | `0xe74344054a43e4706146bd37779af7ac74eb57b182c00d01af68c2c1aeee0091` | `0x0a26e7b7a177f7e10e97dd9f003cb15de428e6cf754e52e14db171f4b4f235ca` |
+| PLTR | `0x1FBE1a0e43594b3455993B5dE5Fd0A7A266298d0` | `0xb7cbF30123382E7d29E127e974b53868a16Aa20d` | `0x3ea1e59e9d58bc51ae98b08e4c1e29483ac0f974eaf28e0774f98019827f9279` | `0xef9621efe988e7037f46825040c68b3bb9826c529265d088456f1b3a033584a0` | `0xa97aca3f6d2c25c1c2f7a76e46daf2c8191a3f6a59dd545760e79844413c197a` |
+| NFLX | `0x3b8262A63d25f0477c4DDE23F83cfe22Cb768C93` | `0xAA976c519485465f299853019AA780AbD47F77F9` | `0x5c214a50279f48eeb7f3d20af50361e679954c0282ca0c86b69fecc55eb083bc` | `0x60284106e9ca1dba76fdb62efd6a6fc952ffe78b523d08656635128db0ee2afd` | `0xdfa3ce40007cdb58176e3f1d9bd28c2cf895eb4ef34530832a6c7f01bf08180e` |
+
+Live proof against the paused-capable TSLA vault:
+
+| Action | Transaction |
+| --- | --- |
+| Policy activation | `0x69075651a78506bd49576f79d5bcddecdcdd8a76626fd6c8344daca91c626063` |
+| USDG collateral deposit | `0x20c4e65827030ea80dde6c8b5335d8f012c22340a09f0815d76e21014152192f` |
+| Slash / reputation update | `0xadada80b2115c25a3dd9703d49fc3524695246596fb1158aaefdf7806b4cceb5` |
+| Violation proof | `0xde7d99c1f3e29f1fe7217db15395068f0730672ad9ca0f8b92b1900d72ef9b51` |
+
+Live proof postconditions from `pnpm status:robinhood` at block `74924490`:
 
 - vault totalAssets: `1 TSLA`
 - additional vault totalAssets: `1 AMD`, `1 AMZN`, `1 PLTR`, `1 NFLX`
 - agent identity id: `1`
-- agent violation count: `1`
+- agent violation count: `2`
 - agent wallet USDG: `100 USDG`
 - SlashPool stake: `0 USDG` after stake and slash
-- live slash proof: `0xdfde4926362720f4c4c0d9c7fd4fa7ea17b397ef1230a90ae9f6fda35d6398b4`
+- current live slash proof: `0xde7d99c1f3e29f1fe7217db15395068f0730672ad9ca0f8b92b1900d72ef9b51`
 
 Source verification is complete on Robinhood's Blockscout explorer:
 
 - [PermissionEngine](https://explorer.testnet.chain.robinhood.com/address/0x049527f5331faea8f0e9e86be8fddcb86bdee1ba)
-- [TSLA WARDENVault](https://explorer.testnet.chain.robinhood.com/address/0x72e59162c013864af1e150fbe12e454a99af7412)
+- [TSLA WARDENVault](https://explorer.testnet.chain.robinhood.com/address/0x02e658d8f20bbf94d85d0ecc0365ab4aa5c26daf)
 - [AgentIdentityRegistry](https://explorer.testnet.chain.robinhood.com/address/0x4d566c927d0b4d40acc880b9729d8c5d905867d1)
 - [SlashPool](https://explorer.testnet.chain.robinhood.com/address/0x6745b7ce66756085cf1254d2028eb9e3b4407bbe)
 - [Stylus SlashPool](https://explorer.testnet.chain.robinhood.com/address/0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8)

@@ -59,7 +59,8 @@ For the stricter requirement-by-requirement status, use `docs/evidence-audit.md`
 
 ## Current Limitations
 
-- Official Robinhood TSLA/AMD/AMZN/PLTR/NFLX vaults are live and funded; the TSLA blocked-execution proof is recorded.
+- Official Robinhood TSLA/AMD/AMZN/PLTR/NFLX paused-capable vaults are live and funded; the TSLA blocked-execution proof is recorded.
 - Live USDG slash/reputation evidence is recorded against agent identity id `1`.
 - Rust/Stylus SlashPool is deployed and activated on Robinhood Chain testnet.
+- Emergency pause blocks policy activation and agent execution while preserving user withdrawals; production still needs multisig/timelock ownership.
 - The dashboard is a local demo surface, not a production portfolio application.

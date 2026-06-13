@@ -82,6 +82,7 @@ Rust/Stylus verification requires Rust 1.88+, `rustup`, `cargo-stylus`, and `was
 - Hackathon submission packet: `docs/submission.md`
 - Final submission draft: `docs/final-submission.md`
 - Recording runbook: `docs/recording-runbook.md`
+- Production readiness runbook: `docs/production-readiness.md`
 
 ## Dashboard
 
