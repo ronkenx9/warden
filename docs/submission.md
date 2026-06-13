@@ -32,7 +32,7 @@ For the stricter requirement-by-requirement status, use `docs/evidence-audit.md`
 | Blocked window handles midnight wrap | `testRejectsBlockedCETWindow`, `testFuzzRejectsEveryMinuteInsideMidnightWrappedBlockedWindow` |
 | Slashing pays affected user | `testMonitorSlashesOperatorAndUpdatesReputation` |
 | Reputation updates on-chain | `testMonitorSlashesOperatorAndUpdatesReputation`, `AgentIdentityRegistry.violationProof` |
-| Monitor proof is x402-shaped | `packages/monitor/src/demo.ts` |
+| Monitor proof is x402-shaped and payment-gated | `packages/monitor/src/index.ts`, `packages/monitor/src/server.ts`, `packages/monitor/src/market.test.ts`, `packages/monitor/src/demo.ts` |
 | Stylus Slash Pool builds | `pnpm stylus:check`, `packages/slash-pool/ISlashPoolStylus.sol` |
 | Agent calls execute end-to-end | `pnpm e2e` / `packages/agent/src/e2e-local.ts` |
 | Dashboard exists for recording | `packages/dashboard` and `pnpm dev` |
@@ -43,7 +43,7 @@ For the stricter requirement-by-requirement status, use `docs/evidence-audit.md`
 
 ## Recording Checklist
 
-1. Run `pnpm test` and show 27 passing Foundry tests.
+1. Run `pnpm test` and show the Foundry, iMessage, and monitor market tests passing.
 2. Run `pnpm e2e` and show the real local chain flow: deploy, sign, allowed trade, blocked revert, slash, reputation update.
 3. Run `pnpm verify:submission` as the full non-secret evidence gate, or run the individual commands if the video needs shorter clips.
 4. Run `pnpm preflight:robinhood` and show the verified TSLA/AMD/AMZN/PLTR/NFLX vaults, USDG SlashPool wiring, and current collateral status.
@@ -52,7 +52,7 @@ For the stricter requirement-by-requirement status, use `docs/evidence-audit.md`
 7. Open `http://127.0.0.1:5173/`.
 8. Walk through Sarah's official TSLA vault panel.
 9. Show the red `TradingWindowClosed()` incident.
-10. Show x402 monitor quote and proof hash.
+10. Show x402 monitor quote, matching `x-payment` header, and proof hash.
 11. Show Slash Pool before/after from local E2E, or from live Robinhood only after `pnpm live:robinhood:slash` succeeds.
 12. Show YieldAgent marketplace row as the intended reputation outcome; call it live only after the signed slash proof records the violation.
 13. Close with the invariant: the agent tried; Solidity said no; no funds moved.
@@ -63,4 +63,5 @@ For the stricter requirement-by-requirement status, use `docs/evidence-audit.md`
 - Live USDG slash/reputation evidence is recorded against agent identity id `1`.
 - Rust/Stylus SlashPool is deployed and activated on Robinhood Chain testnet.
 - Emergency pause blocks policy activation and agent execution while preserving user withdrawals; production still needs multisig/timelock ownership.
+- The x402 monitor is a payment-gated proof-submission service for the demo, not yet a decentralized production runner marketplace.
 - The dashboard is a local demo surface, not a production portfolio application.

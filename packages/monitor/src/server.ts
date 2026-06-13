@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { quoteMonitorReward } from "./index.js";
+import { quoteMonitorReward, verifyX402Payment } from "./index.js";
 import { loadDotEnv, monitorQuoteConfig, submitViolationFromEnv } from "./live-submit.js";
 
 type Json = Record<string, unknown>;
@@ -49,10 +49,22 @@ const server = createServer(async (req, res) => {
     }
 
     if (req.method === "POST" && req.url === "/violations") {
+      const quote = monitorQuoteConfig();
+      const paymentQuote = quoteMonitorReward(quote.resource, quote.asset, quote.payTo);
       if (!acceptUnpaid && !req.headers["x-payment"]) {
-        const quote = monitorQuoteConfig();
-        send(res, 402, quoteMonitorReward(quote.resource, quote.asset, quote.payTo));
+        send(res, 402, paymentQuote);
         return;
+      }
+      if (!acceptUnpaid) {
+        try {
+          verifyX402Payment(String(req.headers["x-payment"]), paymentQuote);
+        } catch (error) {
+          send(res, 402, {
+            error: error instanceof Error ? error.message : String(error),
+            ...paymentQuote,
+          });
+          return;
+        }
       }
 
       const body = await readJson(req);

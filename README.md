@@ -11,7 +11,7 @@ WARDEN moves AI-agent portfolio rules on-chain. A user signs one policy, the age
 - `AgentIdentityRegistry.sol`: ERC-8004-style ERC-721 agent identity registry with URI and metadata support.
 - `SlashPool.sol`: executable Solidity slashing path that moves USDC collateral to affected users and records agent violations.
 - `packages/slash-pool`: Rust/Stylus slashing contract with native core tests, WASM build, and exported Solidity ABI.
-- `packages/monitor`: x402-style monitor proof and reward quote scaffold.
+- `packages/monitor`: x402-shaped paid monitor quote, payment-header validation, proof hashing, and slash submission.
 - `packages/dashboard`: local dashboard and agent marketplace for the hackathon demo.
 - `docs/deployment.md`: deploy commands and chain-specific handoff notes.
 - `docs/submission.md`: recording checklist and evidence matrix.
@@ -67,6 +67,7 @@ Rust/Stylus verification requires Rust 1.88+, `rustup`, `cargo-stylus`, and `was
 - nonce replay prevention
 - agent NFT registration, URI updates, metadata, reserved wallet metadata, and wallet reset on transfer
 - monitor-submitted slashing, duplicate proof rejection, over-slash rejection, and reputation proof recording
+- x402-shaped monitor quote/payment validation before proof submission
 - adversarial fuzzing for limit checks, blocked-window enforcement, allowed-window execution, and delegated caller restrictions
 - local Anvil E2E for the full Sarah/YieldAgent/monitor/slash/reputation path
 - Rust/Stylus Slash Pool native state-machine tests, WASM build, and ABI export

@@ -16,6 +16,8 @@ Agentic DeFi normally trusts the agent's own code to obey user limits. WARDEN mo
 
 The demo uses official Robinhood Chain testnet stock tokens and USDG contracts. Sarah deposits TSLA into WARDEN, signs a TSLA-only policy with a 50 EUR limit and 22:00-06:00 CET block, and YieldAgent attempts a blocked trade. `WARDENVault` rejects it with `TradingWindowClosed()`. A monitor packages the failed-call proof, `SlashPool` slashes the agent/operator collateral, and the agent's ERC-8004-style identity records the violation. Additional official-stock ERC-4626 vaults are live and funded for AMD, AMZN, PLTR, and NFLX.
 
+The monitor service is x402-shaped: `GET /quote` returns an exact-payment quote, `POST /violations` requires an `x-payment` header matching the quote before it reaches the proof submission path, and the same code path submits the resulting proof hash to `SlashPool.submitViolation`. This is enough for the buildathon proof, but it is not claimed as a production decentralized monitoring marketplace.
+
 ## Built For
 
 - Overall track: consumer-protection infrastructure for tokenized RWA portfolios.
@@ -102,6 +104,8 @@ Then open `http://127.0.0.1:5173/`.
 4. `pnpm live:robinhood`: live Robinhood blocked execution reverting with `TradingWindowClosed()` and unchanged TSLA balances.
 5. Dashboard: Sarah's vault, blocked incident, x402-style monitor proof, live slash/reputation outcome, and the funded official-stock vault set.
 
+Adversarial fuzzing coverage is included in `packages/contracts/test/WARDENVaultFuzz.t.sol`. The fuzz suite stresses policy limit boundaries, every minute inside the midnight-wrapped CET blocked window, allowed-window execution, and delegated-caller restrictions, so the demo claim is not based only on one hand-picked Sarah scenario.
+
 ## Evidence Links Inside Repo
 
 - Requirement audit: `docs/evidence-audit.md`
@@ -126,6 +130,7 @@ Then open `http://127.0.0.1:5173/`.
 - Live USDG collateral is funded and the live slash/reputation proof has been recorded.
 - The Rust/Stylus Slash Pool is deployed and activated on Robinhood Chain testnet.
 - The Arbitrum One deployment is a mock demo stack. Do not describe it as wrapping official Robinhood stock tokens unless Robinhood publishes official stock contracts on Arbitrum One.
+- The x402 monitor is a payment-gated proof-submission service for the demo, not yet a decentralized runner marketplace with production settlement reconciliation.
 - Do not claim retail production readiness until audit, compliance review, production key management, multisig/timelock ownership transfer, and operations monitoring are complete.
 
 ## Closing Line

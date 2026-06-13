@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Trustless agent vault for tokenized real-world assets",
   "scripts": {
-    "test": "pnpm --filter @warden/contracts test && pnpm --filter @warden/imessage test",
+    "test": "pnpm --filter @warden/contracts test && pnpm --filter @warden/imessage test && pnpm --filter @warden/monitor test",
     "build": "pnpm --filter @warden/agent build && pnpm --filter @warden/monitor build && pnpm --filter @warden/imessage build && pnpm --filter @warden/dashboard build",
     "demo": "pnpm --filter @warden/agent demo && pnpm --filter @warden/monitor demo && pnpm --filter @warden/imessage demo",
     "imessage:demo": "pnpm --filter @warden/imessage demo",

@@ -1,4 +1,11 @@
-import { createViolationProof, encodeSlashSubmission, quoteMonitorReward, verifyProof } from "./index.js";
+import {
+  createViolationProof,
+  encodeSlashSubmission,
+  encodeX402Payment,
+  quoteMonitorReward,
+  verifyProof,
+  verifyX402Payment,
+} from "./index.js";
 
 const proof = createViolationProof({
   vault: "0x1111111111111111111111111111111111113001",
@@ -13,13 +20,29 @@ const proof = createViolationProof({
 
 const quote = quoteMonitorReward(
   "/violations/submit",
-  "0x1111111111111111111111111111111111111002",
-  "0x1111111111111111111111111111111114001",
+  "0x2222222222222222222222222222222222222222",
+  "0x3333333333333333333333333333333333333333",
 );
+const payment = {
+  x402Version: 1,
+  scheme: "exact",
+  network: quote.accepts[0].network,
+  payload: {
+    asset: quote.accepts[0].asset,
+    amount: quote.accepts[0].amount,
+    payTo: quote.accepts[0].payTo,
+    resource: quote.accepts[0].resource,
+    txHash: "0x69c8cc10152fa6132d6ee3b4d03fe1aa7a1134b595c5bd192a6ddfc01a681d11",
+  },
+} as const;
+const paymentHeader = encodeX402Payment(payment);
 
 console.log("WARDEN monitor demo: x402-style paid violation submission.");
 console.log("HTTP 402 quote:");
 console.log(quote);
+console.log("x-payment header:");
+console.log(paymentHeader);
+console.log(`Payment satisfies quote: ${verifyX402Payment(paymentHeader, quote).payload.txHash === payment.payload.txHash}`);
 console.log("Violation proof:");
 console.log(proof);
 console.log(`Proof verifies locally: ${verifyProof(proof)}`);
