@@ -4,7 +4,7 @@
 
 WARDEN is an ERC-4626 agent vault that enforces retail tokenized-stock portfolio rules on-chain, then slashes agent collateral and updates portable reputation when a monitor proves a violation.
 
-For the copy-ready submission text, contract table, and final caveats, use `docs/final-submission.md`. For the exact recording flow, use `docs/recording-runbook.md`. For the latest saved public-chain state, use `docs/live-evidence-2026-06-01.md`. For the strict done/open audit, use `docs/completion-audit-2026-06-01.md`. For judging calls, use `docs/judge-qa.md`.
+For the copy-ready submission text, contract table, and final caveats, use `docs/final-submission.md`. For the exact recording flow, use `docs/recording-runbook.md`. For a safe 24/7 status loop, use `docs/heartbeat-loop.md`. For the latest saved public-chain state, use `docs/live-evidence-2026-06-01.md`. For the strict done/open audit, use `docs/completion-audit-2026-06-01.md`. For judging calls, use `docs/judge-qa.md`.
 
 ## Demo Narrative
 

@@ -1,101 +1,124 @@
 # WARDEN
 
-Trustless agent vault for tokenized real-world assets.
+**The agent tried. The vault said no. No funds moved.**
 
-WARDEN moves AI-agent portfolio rules on-chain. A user signs one policy, the agent can act only through the vault, and policy violations revert before funds move.
+WARDEN is a trustless vault for tokenized stocks. It lets a retail user give an AI agent limited trading authority without trusting the agent's own code to behave.
 
-## Week 1 Slice
+The user signs one policy. The agent can only act inside the vault. If it breaks the rules, the transaction reverts on-chain before the stock tokens move. A monitor can prove the violation, slash the agent's collateral, and update the agent's permanent reputation.
 
-- `WARDENVault.sol`: ERC-4626 vault wrapper for tokenized stock assets.
-- `PermissionEngine.sol`: EIP-712 policy verifier for one-signature delegated agent sessions.
-- `AgentIdentityRegistry.sol`: ERC-8004-style ERC-721 agent identity registry with URI and metadata support.
-- `MonitorRegistry.sol`: self-registration surface for independent monitor runners, with owner suspension for abuse.
-- `SlashPool.sol`: executable Solidity slashing path that moves USDC collateral to affected users, accepts active registered monitors, and records agent violations.
-- `packages/slash-pool`: Rust/Stylus slashing contract with native core tests, WASM build, and exported Solidity ABI.
-- `packages/monitor`: x402-shaped paid monitor quote, payment-header validation, proof hashing, and slash submission.
-- `packages/dashboard`: local dashboard and agent marketplace for the hackathon demo.
-- `docs/deployment.md`: deploy commands and chain-specific handoff notes.
-- `docs/submission.md`: recording checklist and evidence matrix.
-- Foundry tests covering Sarah's TSLA-only, max 50 EUR/trade, no 22:00-06:00 CET policy.
-- TypeScript demo harness that narrates the allowed and blocked agent paths.
-- Hooks for ERC-8004 identity, Stylus slashing, and x402 monitors through interfaces and vault events.
+## Why This Matters
 
-## Commands
+AI agents are starting to touch real financial assets. Today, most products enforce user limits in the agent app itself: the same software that wants to trade is also trusted to decide whether it is allowed to trade.
+
+That is the wrong trust boundary.
+
+WARDEN moves the rulebook into contracts. The agent can be clever, compromised, or careless. It still cannot trade outside the user's policy.
+
+## The Demo
+
+Sarah holds tokenized TSLA on Robinhood Chain testnet.
+
+She sets a simple rule:
+
+- TSLA only
+- max 50 EUR per trade
+- no trades between 22:00 and 06:00 CET
+
+YieldAgent tries to trade at 01:30 CET.
+
+WARDEN rejects the trade with `TradingWindowClosed()`. No TSLA leaves the vault. A monitor packages the proof, the agent's collateral is slashed, and the agent's reputation records the violation.
+
+## What Is Live
+
+- Official Robinhood Chain testnet vaults for TSLA, AMD, AMZN, PLTR, and NFLX.
+- Each official-stock vault is funded with test stock tokens.
+- Live Robinhood Chain proof that a blocked TSLA trade reverts before funds move.
+- Live slash/reputation proof against the agent identity.
+- Rust/Stylus Slash Pool deployed and activated on Robinhood Chain testnet.
+- Arbitrum One demo stack deployed with mock stock/collateral assets.
+- x402-shaped monitor service with payment-header validation and ERC-20 settlement reconciliation.
+- Production hardening path: monitor registry, timelock deploy script, ownership transfer script, emergency pause, and incident runbook.
+
+## The Value Add
+
+**For users:** they can try agent-managed tokenized stock portfolios without giving the agent unlimited power.
+
+**For agents:** good behavior becomes portable reputation, not just a claim on a website.
+
+**For operators:** bad agents have collateral at risk, and monitors can be paid for catching violations.
+
+**For Robinhood Chain and Arbitrum:** WARDEN turns tokenized stocks into safer agentic finance primitives.
+
+## Evidence In Two Minutes
+
+Install once:
 
 ```bash
 pnpm install
-pnpm test
-pnpm build
-pnpm demo
-pnpm e2e
-pnpm verify:submission
-pnpm env:robinhood
-pnpm preflight:robinhood
-pnpm status:robinhood
-pnpm live:robinhood
-pnpm live:robinhood:slash
-pnpm deploy:timelock
-pnpm admin:transfer
-pnpm dev
-pnpm stylus:check
 ```
 
-The Foundry test suite is the authoritative executable demo.
-`pnpm e2e` starts Anvil, deploys the full local stack, signs Sarah's policy, executes an allowed YieldAgent trade, proves the blocked trade reverts, slashes 100 USDC, and records the reputation violation.
-`pnpm dev` starts the dashboard at `http://127.0.0.1:5173/`.
+Run the main proof gate:
 
-`pnpm verify:submission` runs the full non-secret evidence gate: Solidity tests, TypeScript/dashboard builds, local demos, local Anvil E2E, Stylus check, and Robinhood preflight. It does not sign live transactions.
+```bash
+pnpm verify:submission
+```
 
-`pnpm env:robinhood` checks local `.env` without printing secrets. It derives the deployer and agent addresses, verifies the deployer key matches the funded deployment wallet, and confirms the watched agent matches the signing agent.
+Read the live Robinhood deployment without a private key:
 
-`pnpm preflight:robinhood` and `pnpm status:robinhood` both read the verified Robinhood Chain testnet deployment without a private key. They check that the vault wraps official TSLA, TSLA is deposited, SlashPool uses official USDG, the registry points to SlashPool, and the watched agent has enough wallet USDG or SlashPool stake for one live slash. Set `WARDEN_AGENT_ADDRESS` to inspect a separate delegated agent wallet; otherwise it watches the deployer fallback address.
+```bash
+pnpm heartbeat:robinhood
+```
 
-`pnpm live:robinhood` loads `.env`, activates a fresh policy, attempts a blocked live `execute()`, expects `TradingWindowClosed()`, and verifies that no TSLA moved. Set `DEPLOYER_PRIVATE_KEY` locally before running. `pnpm live:robinhood:slash` runs the same blocked proof plus the funded slash/reputation path when `pnpm preflight:robinhood` shows the watched agent has enough wallet USDG or stake. Set `WARDEN_LIVE_MODE=allowed` only when intentionally moving a small TSLA amount through the demo router.
+Run the local narrative demo:
 
-Rust/Stylus verification requires Rust 1.88+, `rustup`, `cargo-stylus`, and `wasm32-unknown-unknown`. `pnpm stylus:check` runs native Rust tests, builds the Stylus WASM, exports `packages/slash-pool/ISlashPoolStylus.sol`, and runs `cargo stylus check` activation simulation. It defaults to Robinhood Chain testnet when `STYLUS_ENDPOINT` is unset. Set `WARDEN_SKIP_STYLUS_ACTIVATION=1` only when you need an offline compile check.
+```bash
+pnpm demo
+```
 
-## Verified Behavior
+Open the dashboard:
 
-`pnpm test` runs Foundry tests for:
+```bash
+pnpm dev
+```
 
-- valid policy activation from Sarah's signature
-- deposit and withdraw share accounting
-- allowed YieldAgent execution
-- rejection for unauthorized caller
-- rejection for expired policy
-- rejection for non-TSLA asset
-- rejection above 50 EUR notional
-- rejection during the 22:00-06:00 CET blocked window
-- no token movement on rejected execution
-- nonce replay prevention
-- agent NFT registration, URI updates, metadata, reserved wallet metadata, and wallet reset on transfer
-- monitor-submitted slashing, duplicate proof rejection, over-slash rejection, and reputation proof recording
-- registered monitor submission, monitor suspension, and two-step SlashPool ownership transfer
-- x402-shaped monitor quote/payment validation and ERC-20 transfer settlement reconciliation before proof submission
-- adversarial fuzzing for limit checks, blocked-window enforcement, allowed-window execution, and delegated caller restrictions
-- local Anvil E2E for the full Sarah/YieldAgent/monitor/slash/reputation path
-- Rust/Stylus Slash Pool native state-machine tests, WASM build, and ABI export
+Then visit `http://127.0.0.1:5173/`.
 
-## Deployment And Submission
+## 24/7 Demo Mode
 
-- Deployment handoff: `docs/deployment.md`
-- Robinhood Chain testnet deployment: `docs/deployments/robinhood-testnet-46630.md`
-- PRD evidence audit: `docs/evidence-audit.md`
-- Completion audit: `docs/completion-audit-2026-06-01.md`
-- Live evidence snapshot: `docs/live-evidence-2026-06-01.md`
-- Judge Q&A: `docs/judge-qa.md`
-- Hackathon submission packet: `docs/submission.md`
-- Final submission draft: `docs/final-submission.md`
-- Recording runbook: `docs/recording-runbook.md`
-- Production readiness runbook: `docs/production-readiness.md`
+For a safe booth or stream loop, run the read-only heartbeat:
 
-## Dashboard
+```bash
+pnpm heartbeat:robinhood:loop
+```
 
-The dashboard shows the first-screen WARDEN demo state:
+This does not read `.env`, does not use private keys, and does not send transactions. It repeatedly proves the Robinhood deployment is alive, funded, unpaused, and wired to the expected stock tokens, USDG SlashPool, and agent reputation registry.
 
-- Sarah's official Robinhood TSLA vault and policy rules
-- the blocked 01:30 CET `TradingWindowClosed()` attempt
-- x402-style monitor proof submission
-- live USDG slash readiness for the watched agent
-- post-signed-proof slash and reputation outcome
-- a compact timeline that separates live vault evidence from local E2E slash proof
+Use the richer local operator only when you want repeated console demos:
+
+```bash
+WARDEN_DEMO_RUN_ONCE=1 pnpm demo:operator
+```
+
+Do not loop `live:robinhood`, `live:robinhood:slash`, deploy scripts, admin scripts, or `WARDEN_LIVE_MODE=allowed`; those are transaction-sending commands.
+
+## Track Fit
+
+- **Overall:** consumer-protection infrastructure for tokenized real-world assets.
+- **Agentic:** autonomous agents get bounded authority and economic accountability.
+- **Stylus:** slashing logic is implemented in Rust/Stylus and deployed on Robinhood Chain testnet.
+- **Robinhood Chain:** the primary demo wraps official Robinhood Chain testnet stock tokens.
+
+## Current Claim Boundary
+
+WARDEN is hackathon/demo ready and production-shaped.
+
+It is not a retail production launch until external audit, legal/compliance approval, live timelock ownership transfer, and independent monitor operators are complete.
+
+## Links
+
+- Final submission text: [docs/final-submission.md](docs/final-submission.md)
+- Evidence audit: [docs/evidence-audit.md](docs/evidence-audit.md)
+- Robinhood deployment: [docs/deployments/robinhood-testnet-46630.md](docs/deployments/robinhood-testnet-46630.md)
+- Recording runbook: [docs/recording-runbook.md](docs/recording-runbook.md)
+- Production readiness: [docs/production-readiness.md](docs/production-readiness.md)
+- Architecture: [docs/architecture.md](docs/architecture.md)

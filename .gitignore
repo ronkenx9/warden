@@ -7,3 +7,5 @@ packages/contracts/out/
 packages/contracts/broadcast/
 .env
 .DS_Store
+.warden/
+logs/

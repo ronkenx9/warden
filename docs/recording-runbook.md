@@ -15,6 +15,7 @@ Recommended tab labels:
 - `evidence`
 - `live`
 - `dashboard`
+- `heartbeat` if you want a 24/7 read-only status loop
 
 Keep `.env` private. Do not show `DEPLOYER_PRIVATE_KEY` on screen.
 
@@ -32,7 +33,7 @@ Narration:
 
 Call out these expected proof points:
 
-- `27 tests passed`
+- `39` Foundry tests pass, plus iMessage and monitor market tests
 - local E2E shows allowed trade, blocked `TradingWindowClosed`, slash, and reputation update
 - Stylus check shows `contract size: 7.7 KB` and Robinhood activation simulation
 - Robinhood preflight shows:
@@ -42,6 +43,14 @@ Call out these expected proof points:
   - SlashPool collateral is official USDG
   - registry slash recorder is SlashPool
   - watched agent has enough USDG or stake for one live slash
+
+For a safe background proof that does not read `.env` or send transactions:
+
+```bash
+pnpm heartbeat:robinhood:loop
+```
+
+See `docs/heartbeat-loop.md`. Do not loop live slash, deploy, admin, or allowed-trade commands.
 
 ## Tab 2: Live Robinhood Proof
 
