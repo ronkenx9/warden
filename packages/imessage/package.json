@@ -10,7 +10,7 @@
     "live": "tsx src/spectrum-live.ts"
   },
   "dependencies": {
-    "tsx": "^4.19.2",
+    "tsx": "^4.22.4",
     "viem": "^2.21.54"
   },
   "devDependencies": {
