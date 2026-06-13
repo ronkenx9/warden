@@ -21,6 +21,7 @@
     "monitor:serve": "pnpm --filter @warden/monitor serve",
     "status:robinhood": "pnpm --filter @warden/agent status:robinhood",
     "deploy:official": "set -a; [ ! -f .env ] || . ./.env; set +a; cd packages/contracts && forge script script/DeployOfficial.s.sol:DeployOfficial --rpc-url \"$WARDEN_DEPLOY_RPC_URL\" --private-key \"$DEPLOYER_PRIVATE_KEY\" --broadcast",
+    "deploy:official-vault": "set -a; [ ! -f .env ] || . ./.env; set +a; cd packages/contracts && forge script script/DeployOfficialVault.s.sol:DeployOfficialVault --rpc-url \"$WARDEN_DEPLOY_RPC_URL\" --private-key \"$DEPLOYER_PRIVATE_KEY\" --broadcast",
     "monitor:authorize": "set -a; [ ! -f .env ] || . ./.env; set +a; cd packages/contracts && forge script script/AuthorizeMonitor.s.sol:AuthorizeMonitor --rpc-url \"$WARDEN_DEPLOY_RPC_URL\" --private-key \"$DEPLOYER_PRIVATE_KEY\" --broadcast",
     "dev": "pnpm --filter @warden/dashboard dev",
     "preview": "pnpm --filter @warden/dashboard preview",

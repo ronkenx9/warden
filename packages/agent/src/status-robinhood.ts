@@ -29,15 +29,35 @@ const robinhood = defineChain({
 });
 
 const defaultDeployment = {
-  deployer: "0xAdAd6565e19c5d256E1114226735D5496Ab9a627",
+  deployer: "0x6727A665ef9257E2A4e9A4ED58B9136f62b0E1b1",
+  amd: "0x71178BAc73cBeb415514eB542a8995b82669778d",
   tsla: "0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E",
+  amzn: "0x5884aD2f920c162CFBbACc88C9C51AA75eC09E02",
+  pltr: "0x1FBE1a0e43594b3455993B5dE5Fd0A7A266298d0",
+  nflx: "0x3b8262A63d25f0477c4DDE23F83cfe22Cb768C93",
   usdg: "0x7E955252E15c84f5768B83c41a71F9eba181802F",
-  permissionEngine: "0xd63eFdD5F4774f48F678bD9d12A3cE85c758C428",
-  vault: "0x5e8b55278FC2c1d0Ddb29A8973Bbba9f5CD55c98",
-  identityRegistry: "0x68c451578B0E70e19A9369146061b5c311387cD3",
-  slashPool: "0xE9F0F8BE0B079d5A910e651aF62A1a3756057Dc8",
-  mockRouter: "0x1E1e8528760B310d0b23b32ee9B5a0025a280FF7",
+  permissionEngine: "0x049527f5331FaeA8f0e9E86be8FDdCB86BdeE1ba",
+  vault: "0x72E59162C013864AF1e150fbe12e454A99aF7412",
+  identityRegistry: "0x4D566c927d0B4d40AcC880b9729d8c5D905867D1",
+  slashPool: "0x6745b7CE66756085cF1254d2028EB9e3b4407bbE",
+  mockRouter: "0x55081762b22FDD6f3FACa9c1c153397352a9cf63",
 } as const satisfies Record<string, Address>;
+
+const robinhoodStocks = [
+  ["AMD", defaultDeployment.amd],
+  ["TSLA", defaultDeployment.tsla],
+  ["AMZN", defaultDeployment.amzn],
+  ["PLTR", defaultDeployment.pltr],
+  ["NFLX", defaultDeployment.nflx],
+] as const;
+
+const officialVaults = [
+  ["AMD", defaultDeployment.amd, "0x1C03E8C2a46a2fEF43eE53dd10341806CC3f9dF2"],
+  ["TSLA", defaultDeployment.tsla, defaultDeployment.vault],
+  ["AMZN", defaultDeployment.amzn, "0x1BC9cAE1Fc191f7620BfD1a8463AeF76aD3d8E8F"],
+  ["PLTR", defaultDeployment.pltr, "0xb11a205E3E1390D33184a7BF6403ef490feFDe4e"],
+  ["NFLX", defaultDeployment.nflx, "0x4425A1c7561341ce196F3b792c2Cfc6cCbb78603"],
+] as const satisfies readonly (readonly [string, Address, Address])[];
 
 type Deployment = Record<keyof typeof defaultDeployment, Address>;
 
@@ -49,7 +69,11 @@ function addressEnv(name: string, fallback: Address): Address {
 function loadDeploymentFromEnv(): Deployment {
   return {
     deployer: addressEnv("WARDEN_EXPECTED_DEPLOYER_ADDRESS", defaultDeployment.deployer),
+    amd: defaultDeployment.amd,
     tsla: addressEnv("WARDEN_ASSET", defaultDeployment.tsla),
+    amzn: defaultDeployment.amzn,
+    pltr: defaultDeployment.pltr,
+    nflx: defaultDeployment.nflx,
     usdg: addressEnv("WARDEN_COLLATERAL", defaultDeployment.usdg),
     permissionEngine: addressEnv("WARDEN_PERMISSION_ENGINE", defaultDeployment.permissionEngine),
     vault: addressEnv("WARDEN_VAULT", defaultDeployment.vault),
@@ -107,6 +131,48 @@ async function main() {
   const slashPoolArtifact = await artifact("SlashPool.sol/SlashPool.json");
   const identityArtifact = await artifact("AgentIdentityRegistry.sol/AgentIdentityRegistry.json");
   const erc20Artifact = await artifact("MockERC20.sol/MockERC20.json");
+  const stockBalances = await Promise.all(
+    robinhoodStocks.map(async ([symbol, address]) => ({
+      symbol,
+      address,
+      balance: (await publicClient.readContract({
+        address,
+        abi: erc20Artifact.abi,
+        functionName: "balanceOf",
+        args: [deployment.deployer],
+      })) as bigint,
+      decimals: Number(
+        await publicClient.readContract({
+          address,
+          abi: erc20Artifact.abi,
+          functionName: "decimals",
+        }),
+      ),
+    })),
+  );
+  const vaultBalances = await Promise.all(
+    officialVaults.map(async ([symbol, expectedAsset, vault]) => ({
+      symbol,
+      expectedAsset,
+      vault,
+      asset: (await publicClient.readContract({
+        address: vault,
+        abi: vaultArtifact.abi,
+        functionName: "asset",
+      })) as Address,
+      totalAssets: (await publicClient.readContract({
+        address: vault,
+        abi: vaultArtifact.abi,
+        functionName: "totalAssets",
+      })) as bigint,
+      shares: (await publicClient.readContract({
+        address: vault,
+        abi: vaultArtifact.abi,
+        functionName: "balanceOf",
+        args: [deployment.deployer],
+      })) as bigint,
+    })),
+  );
 
   const [
     chainId,
@@ -223,6 +289,19 @@ async function main() {
   console.log(`Block: ${blockNumber}`);
   console.log(`Deployer: ${deployment.deployer}`);
   console.log(`Deployer ETH: ${formatEther(deployerEth)}`);
+  console.log("Official stock token balances:");
+  for (const stock of stockBalances) {
+    console.log(`- ${stock.symbol}: ${formatUnits(stock.balance, stock.decimals)} @ ${stock.address}`);
+  }
+  console.log("Official WARDEN vaults:");
+  for (const vault of vaultBalances) {
+    console.log(
+      `- ${vault.symbol}: ${formatUnits(vault.totalAssets, 18)} deposited, ${formatUnits(
+        vault.shares,
+        18,
+      )} shares @ ${vault.vault}`,
+    );
+  }
   console.log("");
   console.log(`Vault: ${deployment.vault}`);
   console.log(`Vault name: ${vaultName}`);
@@ -252,6 +331,11 @@ async function main() {
     ["chain id is Robinhood testnet", chainId === robinhood.id],
     ["vault wraps official TSLA", String(vaultAsset).toLowerCase() === deployment.tsla.toLowerCase()],
     ["vault has TSLA deposited", (vaultTotalAssets as bigint) > 0n],
+    [
+      "all official stock vaults wrap expected assets",
+      vaultBalances.every((vault) => vault.asset.toLowerCase() === vault.expectedAsset.toLowerCase()),
+    ],
+    ["all official stock vaults hold deposits", vaultBalances.every((vault) => vault.totalAssets > 0n)],
     ["slash pool uses official USDG", String(slashCollateral).toLowerCase() === deployment.usdg.toLowerCase()],
     ["registry points to slash pool", String(slashRecorder).toLowerCase() === deployment.slashPool.toLowerCase()],
     [

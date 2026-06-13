@@ -8,15 +8,19 @@ WARDEN removes the agent as the policy enforcement point. In most agentic DeFi p
 
 ## What is live on Robinhood Chain?
 
-The Solidity WARDEN stack is live and source-verified on Robinhood Chain testnet:
+The Solidity WARDEN stack is live on Robinhood Chain testnet:
 
-- `PermissionEngine`: `0xd63eFdD5F4774f48F678bD9d12A3cE85c758C428`
-- `WARDENVault`: `0x5e8b55278FC2c1d0Ddb29A8973Bbba9f5CD55c98`
-- `AgentIdentityRegistry`: `0x68c451578B0E70e19A9369146061b5c311387cD3`
-- `SlashPool`: `0xE9F0F8BE0B079d5A910e651aF62A1a3756057Dc8`
-- `MockRouter`: `0x1E1e8528760B310d0b23b32ee9B5a0025a280FF7`
+- `PermissionEngine`: `0x049527f5331FaeA8f0e9E86be8FDdCB86BdeE1ba`
+- `TSLA WARDENVault`: `0x72E59162C013864AF1e150fbe12e454A99aF7412`
+- `AMD WARDENVault`: `0x1C03E8C2a46a2fEF43eE53dd10341806CC3f9dF2`
+- `AMZN WARDENVault`: `0x1BC9cAE1Fc191f7620BfD1a8463AeF76aD3d8E8F`
+- `PLTR WARDENVault`: `0xb11a205E3E1390D33184a7BF6403ef490feFDe4e`
+- `NFLX WARDENVault`: `0x4425A1c7561341ce196F3b792c2Cfc6cCbb78603`
+- `AgentIdentityRegistry`: `0x4D566c927d0B4d40AcC880b9729d8c5D905867D1`
+- `SlashPool`: `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE`
+- `Stylus SlashPool`: `0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8`
 
-The vault wraps official Robinhood Chain testnet TSLA and currently holds `1 TSLA`.
+The vault set wraps official Robinhood Chain testnet TSLA, AMD, AMZN, PLTR, and NFLX. Each vault currently holds `1` deposited stock token.
 
 ## What is the exact user policy?
 
@@ -50,18 +54,18 @@ Live state:
 
 - watched deployer fallback agent has `100 USDG`
 - default slash amount is `100 USDG`
-- `pnpm live:robinhood:slash` is ready once `DEPLOYER_PRIVATE_KEY` is set locally
+- live slash/reputation proof is already recorded against agent identity id `1`
 
 ## Is the live slash already recorded?
 
-Not yet. Do not claim it as complete until `pnpm live:robinhood:slash` succeeds. Current public reads show:
+Yes. The signed Robinhood proof ran successfully. Current public reads show:
 
-- agent identity id: `0`
-- violation count: `0`
+- agent identity id: `1`
+- violation count: `1`
 - SlashPool stake: `0`
 - agent wallet USDG: `100`
 
-The first successful signed slash run will register the agent, stake USDG, slash it, pay the beneficiary, and record the violation.
+The successful signed slash run registered the agent, staked USDG, slashed it, paid the beneficiary, and recorded the violation.
 
 ## What is Stylus doing here?
 
@@ -73,12 +77,11 @@ Current evidence:
 - Stylus WASM builds
 - Solidity ABI export exists at `packages/slash-pool/ISlashPoolStylus.sol`
 - `cargo stylus check` activation simulation passes against Robinhood Chain testnet
-
-The Stylus contract is not broadcast yet. Do not claim a Stylus deployment address unless one is added later.
+- Stylus SlashPool is deployed and activated at `0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8`
 
 ## Is WARDEN deployed on Arbitrum One?
 
-No Arbitrum One deployment address is recorded. The current live deployment is Robinhood Chain testnet, which is an Arbitrum Orbit chain. The x402 monitor quote uses an Arbitrum-shaped payment flow, and the Stylus package is activation-checked, but the submission should not claim Arbitrum One deployment unless a real address and explorer link are added.
+Yes, as a mock demo stack on Arbitrum One mainnet. It proves the Solidity primitive set can deploy on Arbitrum One, but it does not wrap official Robinhood stock tokens because those official stock contracts live on Robinhood Chain.
 
 ## What does `pnpm verify:submission` prove?
 
@@ -96,7 +99,7 @@ It does not sign live transactions.
 
 ## What still needs a private key?
 
-Only the signed live proof commands:
+Only repeat signed live proof commands or new deployments:
 
 ```bash
 pnpm env:robinhood
@@ -108,11 +111,6 @@ pnpm live:robinhood:slash
 
 ## What should be avoided in the submission?
 
-Do not claim:
+Do not claim retail production readiness, audited contracts, decentralized monitor-market production operation, or official Robinhood stock support on Arbitrum One.
 
-- live Robinhood slash is already recorded
-- Stylus SlashPool is broadcast
-- Arbitrum One deployment exists
-- dashboard slash/reputation values are live chain data
-
-The defensible claim is: WARDEN is live and verified on Robinhood Chain for the Solidity vault stack, local E2E proves slash/reputation, Stylus activation check passes, and live slash is funded/ready pending local signing.
+The defensible claim is: WARDEN is live on Robinhood Chain for the Solidity multi-stock vault stack, live slash/reputation proof is recorded, Stylus is deployed/activated on Robinhood Chain, and Arbitrum One has a mock demo stack.

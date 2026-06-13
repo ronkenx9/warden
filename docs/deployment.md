@@ -41,7 +41,7 @@ Expected current evidence:
 
 ## Robinhood Chain Testnet
 
-The official-token deployment is recorded in `docs/deployments/robinhood-testnet-46630.md`. It wraps Robinhood's official TSLA test token and uses USDG as slash collateral.
+The official-token deployment is recorded in `docs/deployments/robinhood-testnet-46630.md`. It wraps Robinhood's official TSLA, AMD, AMZN, PLTR, and NFLX test tokens through one ERC-4626 vault per stock and uses USDG as slash collateral.
 
 For a fresh mock demo stack, deploy the Solidity primitives that wrap mock tokenized stock assets and enforce policy:
 
@@ -82,6 +82,32 @@ Required `.env` values:
 - `WARDEN_VAULT_SYMBOL`
 
 The current verified TSLA vault uses Robinhood TSLA `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E` and USDG `0x7E955252E15c84f5768B83c41a71F9eba181802F`.
+
+For an additional Robinhood stock vault that should reuse the existing hardened `PermissionEngine`, use `DeployOfficialVault` instead of redeploying the full identity/slash stack:
+
+```bash
+cd /Users/gadgetplug/Documents/vibecoding/warden
+pnpm deploy:official-vault
+```
+
+Required `.env` or exported values:
+
+- `WARDEN_DEPLOY_RPC_URL`
+- `DEPLOYER_PRIVATE_KEY`
+- `WARDEN_PERMISSION_ENGINE`
+- `WARDEN_ASSET`
+- `WARDEN_VAULT_NAME`
+- `WARDEN_VAULT_SYMBOL`
+
+The current official-stock vaults on Robinhood Chain testnet are:
+
+| Stock | Token | Vault |
+| --- | --- | --- |
+| TSLA | `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E` | `0x72E59162C013864AF1e150fbe12e454A99aF7412` |
+| AMD | `0x71178BAc73cBeb415514eB542a8995b82669778d` | `0x1C03E8C2a46a2fEF43eE53dd10341806CC3f9dF2` |
+| AMZN | `0x5884aD2f920c162CFBbACc88C9C51AA75eC09E02` | `0x1BC9cAE1Fc191f7620BfD1a8463AeF76aD3d8E8F` |
+| PLTR | `0x1FBE1a0e43594b3455993B5dE5Fd0A7A266298d0` | `0xb11a205E3E1390D33184a7BF6403ef490feFDe4e` |
+| NFLX | `0x3b8262A63d25f0477c4DDE23F83cfe22Cb768C93` | `0x4425A1c7561341ce196F3b792c2Cfc6cCbb78603` |
 
 ## Arbitrum Sepolia / Arbitrum One
 

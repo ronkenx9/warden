@@ -17,13 +17,17 @@ export const robinhood = defineChain({
 });
 
 export const deployment = {
+  amd: "0x71178BAc73cBeb415514eB542a8995b82669778d",
   tsla: "0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E",
+  amzn: "0x5884aD2f920c162CFBbACc88C9C51AA75eC09E02",
+  pltr: "0x1FBE1a0e43594b3455993B5dE5Fd0A7A266298d0",
+  nflx: "0x3b8262A63d25f0477c4DDE23F83cfe22Cb768C93",
   usdg: "0x7E955252E15c84f5768B83c41a71F9eba181802F",
-  permissionEngine: "0xd63eFdD5F4774f48F678bD9d12A3cE85c758C428",
-  vault: "0x5e8b55278FC2c1d0Ddb29A8973Bbba9f5CD55c98",
-  identityRegistry: "0x68c451578B0E70e19A9369146061b5c311387cD3",
-  slashPool: "0xE9F0F8BE0B079d5A910e651aF62A1a3756057Dc8",
-  mockRouter: "0x1E1e8528760B310d0b23b32ee9B5a0025a280FF7",
+  permissionEngine: "0x049527f5331FaeA8f0e9E86be8FDdCB86BdeE1ba",
+  vault: "0x72E59162C013864AF1e150fbe12e454A99aF7412",
+  identityRegistry: "0x4D566c927d0B4d40AcC880b9729d8c5D905867D1",
+  slashPool: "0x6745b7CE66756085cF1254d2028EB9e3b4407bbE",
+  mockRouter: "0x55081762b22FDD6f3FACa9c1c153397352a9cf63",
 } as const satisfies Record<string, Address>;
 
 // EIP-712 domain + Policy type — must match PermissionEngine.sol exactly.
@@ -47,10 +51,18 @@ export const POLICY_TYPES = {
   ],
 } as const;
 
-// Tradeable tokenized RWAs the parser can resolve by symbol.
-// Only TSLA is wired to a live mock asset on the current deployment; others
-// are accepted by the parser but flagged as unsupported until deployed.
+// Official Robinhood Chain testnet stock tokens the parser can resolve.
+// ERC-4626 stays one-asset-per-vault; TSLA is the live funded vault today,
+// and the other official CAs can be wrapped by deploying additional vaults.
 export const KNOWN_ASSETS: Record<string, { address: Address; live: boolean }> = {
+  AMD: { address: deployment.amd, live: true },
+  RAMD: { address: deployment.amd, live: true },
   TSLA: { address: deployment.tsla, live: true },
   RTSLA: { address: deployment.tsla, live: true },
+  AMZN: { address: deployment.amzn, live: true },
+  RAMZN: { address: deployment.amzn, live: true },
+  PLTR: { address: deployment.pltr, live: true },
+  RPLTR: { address: deployment.pltr, live: true },
+  NFLX: { address: deployment.nflx, live: true },
+  RNFLX: { address: deployment.nflx, live: true },
 };

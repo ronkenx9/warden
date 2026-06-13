@@ -117,7 +117,9 @@ function draftFrom(session: Session, text: string): { session: Session; reply: R
 
 function looksLikePolicy(text: string): boolean {
   // Cheap gate: mentions money, an asset, a time, or trading verbs.
-  return /\b(tsla|rtsla|eur|euro|€|\$|trade|max|limit|cap|between|am|pm|\d)\b/i.test(text);
+  return /\b(amd|ramd|tsla|rtsla|amzn|ramzn|pltr|rpltr|nflx|rnflx|eur|euro|€|\$|trade|max|limit|cap|between|am|pm|\d)\b/i.test(
+    text,
+  );
 }
 
 export { GREETING };

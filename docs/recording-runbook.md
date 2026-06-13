@@ -125,8 +125,8 @@ Keep these caveats exact until the signed live proof is recorded:
 - The live vault has `1 TSLA`.
 - The watched agent has `100 USDG`, enough for one default live slash.
 - Live slash/reputation proof still requires local `DEPLOYER_PRIVATE_KEY`.
-- Rust/Stylus Slash Pool passes native tests, WASM build, ABI export, and Robinhood activation simulation, but is not broadcast yet.
-- Do not claim Arbitrum One deployment unless a real address and explorer link are added.
+- Rust/Stylus Slash Pool is deployed and activated on Robinhood Chain testnet.
+- Arbitrum One deployment exists as a mock demo stack; do not claim it wraps official Robinhood stock tokens.
 
 ## Closing Script
 

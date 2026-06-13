@@ -16,7 +16,7 @@ const icon = {
 type GuardrailStatus = "pass" | "fail";
 
 const policyRules = [
-  { label: "Asset", value: "Official Robinhood TSLA only", status: "pass" as GuardrailStatus },
+  { label: "Asset", value: "Official Robinhood stock vault", status: "pass" as GuardrailStatus },
   { label: "Max notional", value: "50 EUR per trade", status: "pass" as GuardrailStatus },
   { label: "Blocked window", value: "22:00-06:00 CET", status: "fail" as GuardrailStatus },
   { label: "Delegated caller", value: "YieldAgent session key", status: "pass" as GuardrailStatus },
@@ -24,9 +24,12 @@ const policyRules = [
 
 const liveDeployment = [
   { label: "Chain", value: "Robinhood testnet 46630" },
-  { label: "Vault", value: "0x5e8b...5c98" },
-  { label: "TSLA", value: "0xC9f9...Bd4E" },
-  { label: "USDG Slash Pool", value: "0xE9F0...7Dc8" },
+  { label: "TSLA Vault", value: "0x72E5...7412" },
+  { label: "AMD Vault", value: "0x1C03...9dF2" },
+  { label: "AMZN Vault", value: "0x1BC9...8E8F" },
+  { label: "PLTR Vault", value: "0xb11a...De4e" },
+  { label: "NFLX Vault", value: "0x4425...8603" },
+  { label: "USDG Slash Pool", value: "0x6745...7bbE" },
 ];
 
 // Agent marketplace + demo timeline are fed by a real autonomous swarm run
@@ -66,7 +69,7 @@ function App() {
             <div>
               <CircleDollarSign size={24} />
               <strong>1</strong>
-              <span>live TSLA deposited</span>
+              <span>stock vaults funded</span>
             </div>
           </div>
         </div>
@@ -84,13 +87,13 @@ function App() {
           <div className="panelHeader">
             <div>
               <p>Sarah's Vault</p>
-              <h2>Official TSLA policy guard</h2>
+              <h2>Official stock policy guard</h2>
             </div>
             <img className="headerIcon" src={icon.vault} alt="" />
           </div>
           <div className="vaultValue">
             <span>Deposited</span>
-            <strong>1 TSLA</strong>
+            <strong>5 vaults</strong>
           </div>
           <div className="rules">
             {policyRules.map((rule) => (

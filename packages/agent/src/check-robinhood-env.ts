@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { getAddress, type Address, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-const defaultExpectedDeployer = "0xAdAd6565e19c5d256E1114226735D5496Ab9a627" as const satisfies Address;
+const defaultExpectedDeployer = "0x6727A665ef9257E2A4e9A4ED58B9136f62b0E1b1" as const satisfies Address;
 
 async function loadDotEnv() {
   if (process.env.WARDEN_SKIP_DOTENV === "1") {

@@ -19,9 +19,9 @@ Deployer: `0xAdAd6565e19c5d256E1114226735D5496Ab9a627`
 | Slash recorder setup | `0xc625C97B46272CB544c303505c8d6468481059c8` | `0xe28d9fdac4ca6c90a731ed13a33171f42d7903710f3d7a8dc82e5fd42e9ac818` |
 | Sarah rTSLA mint | `0x25bBa65436feab009015EfD620898854d7985B35` | `0xc434becd6310b35d1500dc457eb3201b19a8d941676c5b27633582a5a2cc07a2` |
 
-## Official Robinhood Token Stack
+## Legacy Official Robinhood Token Stack
 
-This is the production-shaped deployment using official Robinhood Chain testnet stock tokens rather than the mock rTSLA contract.
+This earlier production-shaped deployment used official Robinhood Chain testnet TSLA rather than the mock rTSLA contract. It predates the hardened authorized-monitor stack below. Use the hardened stack as the current source of truth.
 
 | Contract | Address | Transaction |
 | --- | --- | --- |
@@ -45,7 +45,11 @@ This deployment uses the authorized-monitor `SlashPool` and env-configurable liv
 
 | Contract / Action | Address | Transaction |
 | --- | --- | --- |
+| Official AMD token | `0x71178BAc73cBeb415514eB542a8995b82669778d` | Robinhood deployment |
 | Official TSLA token | `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E` | Robinhood deployment |
+| Official AMZN token | `0x5884aD2f920c162CFBbACc88C9C51AA75eC09E02` | Robinhood deployment |
+| Official PLTR token | `0x1FBE1a0e43594b3455993B5dE5Fd0A7A266298d0` | Robinhood deployment |
+| Official NFLX token | `0x3b8262A63d25f0477c4DDE23F83cfe22Cb768C93` | Robinhood deployment |
 | Official USDG token | `0x7E955252E15c84f5768B83c41a71F9eba181802F` | Robinhood deployment |
 | PermissionEngine | `0x049527f5331FaeA8f0e9E86be8FDdCB86BdeE1ba` | `0xccf71234036201eb90477a849c45549f1ee0663430bc04deeca3b2bc0f4b989f` |
 | WARDENVault | `0x72E59162C013864AF1e150fbe12e454A99aF7412` | `0x056f4bb445cfe20ac9ff0c2c3126daa1db6d521be4dd33f83d018a91801c388b` |
@@ -59,9 +63,19 @@ This deployment uses the authorized-monitor `SlashPool` and env-configurable liv
 | USDG collateral deposit | `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE` | `0x2272db8bdeb380640421ed88c65cf63df758dca4391caedeea70732ad57ab1fb` |
 | Live slash / reputation update | `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE` | `0x4c6f96f76c623d46b0cb53c327067c98acb06b2ca61b7d3e1f9610c0de5c4a92` |
 
+Additional official-stock ERC-4626 vaults deployed on 2026-06-13. Each vault reuses the hardened `PermissionEngine` above and holds `1` deposited stock token:
+
+| Stock | Token | Vault | Vault Deploy Tx | Approval Tx | Deposit Tx |
+| --- | --- | --- | --- | --- | --- |
+| AMD | `0x71178BAc73cBeb415514eB542a8995b82669778d` | `0x1C03E8C2a46a2fEF43eE53dd10341806CC3f9dF2` | `0xb740f1a78c484ae4a7544db3ae80dd5d17182ac9018bd0b3810dfeba6aa00d57` | `0x62d09ee1ed5d47d6f13d12527b85e7091d8d9cc880d360af1093a4cc55d49004` | `0xde66bbe28794be1e3fdb08a6f79383064a7d30226eaff992714bb5a516cc9004` |
+| AMZN | `0x5884aD2f920c162CFBbACc88C9C51AA75eC09E02` | `0x1BC9cAE1Fc191f7620BfD1a8463AeF76aD3d8E8F` | `0x3c9b255d6fcffe7a569c843a283e9c01d9a27df17105155828ae5d59e1ca192d` | `0x191c11191394269cb0ef9d0556ab5bf53c4671e88fef71a8beaa5f8455f5f157` | `0xe5422d4a9d3d167b52e5faacd389fa6ef5612632b4739af9282dbb2d63b107aa` |
+| PLTR | `0x1FBE1a0e43594b3455993B5dE5Fd0A7A266298d0` | `0xb11a205E3E1390D33184a7BF6403ef490feFDe4e` | `0x867dee11e25551cde0b1d385c8b5de5edddabe4fca10e00e49328faa57e088de` | `0xbd60decdefb2c4e323bad2ef86b7da1d3877413d434a2d77a135fbde5af39e0e` | `0x54b201cfadc2c1dbfbdf3bdabdb8bef2052cfe1e19818925a7a0d1698887379d` |
+| NFLX | `0x3b8262A63d25f0477c4DDE23F83cfe22Cb768C93` | `0x4425A1c7561341ce196F3b792c2Cfc6cCbb78603` | `0x266ef5f9e0e38d35b470c98ae1aae80fbc8a113b344bfc1e341470a924dbff26` | `0x65a757e46ea7a427b269b3f2a95b3c8dd04cabef791104f1a86ba670d42d961e` | `0xf1a646a95ef080f21ebe0b58a7cca408f7bc62e732f726208be52863f1940063` |
+
 Live proof postconditions from `pnpm status:robinhood` at block `73624453`:
 
 - vault totalAssets: `1 TSLA`
+- additional vault totalAssets: `1 AMD`, `1 AMZN`, `1 PLTR`, `1 NFLX`
 - agent identity id: `1`
 - agent violation count: `1`
 - agent wallet USDG: `100 USDG`
@@ -70,11 +84,11 @@ Live proof postconditions from `pnpm status:robinhood` at block `73624453`:
 
 Source verification is complete on Robinhood's Blockscout explorer:
 
-- [PermissionEngine](https://explorer.testnet.chain.robinhood.com/address/0xd63efdd5f4774f48f678bd9d12a3ce85c758c428)
-- [WARDENVault](https://explorer.testnet.chain.robinhood.com/address/0x5e8b55278fc2c1d0ddb29a8973bbba9f5cd55c98)
-- [AgentIdentityRegistry](https://explorer.testnet.chain.robinhood.com/address/0x68c451578b0e70e19a9369146061b5c311387cd3)
-- [SlashPool](https://explorer.testnet.chain.robinhood.com/address/0xe9f0f8be0b079d5a910e651af62a1a3756057dc8)
-- [MockRouter](https://explorer.testnet.chain.robinhood.com/address/0x1e1e8528760b310d0b23b32ee9b5a0025a280ff7)
+- [PermissionEngine](https://explorer.testnet.chain.robinhood.com/address/0x049527f5331faea8f0e9e86be8fddcb86bdee1ba)
+- [TSLA WARDENVault](https://explorer.testnet.chain.robinhood.com/address/0x72e59162c013864af1e150fbe12e454a99af7412)
+- [AgentIdentityRegistry](https://explorer.testnet.chain.robinhood.com/address/0x4d566c927d0b4d40acc880b9729d8c5d905867d1)
+- [SlashPool](https://explorer.testnet.chain.robinhood.com/address/0x6745b7ce66756085cf1254d2028eb9e3b4407bbe)
+- [Stylus SlashPool](https://explorer.testnet.chain.robinhood.com/address/0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8)
 
 ## Smoke Reads
 
@@ -83,12 +97,12 @@ Source verification is complete on Robinhood's Blockscout explorer:
 - `SlashPool.collateral()` -> `0x797826641C39Eee725B992859feD5133C1669Bd9`
 - `SlashPool.identityRegistry()` -> `0xc625C97B46272CB544c303505c8d6468481059c8`
 - Official-token `WARDENVault.asset()` -> `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E`
-- Official-token `WARDENVault.permissionEngine()` -> `0xd63eFdD5F4774f48F678bD9d12A3cE85c758C428`
+- Official-token `WARDENVault.permissionEngine()` -> `0x049527f5331FaeA8f0e9E86be8FDdCB86BdeE1ba`
 - Official-token `WARDENVault.totalAssets()` -> `1000000000000000000`
 - Official-token `WARDENVault.balanceOf(deployer)` -> `1000000000000000000`
 - Official-token `SlashPool.collateral()` -> `0x7E955252E15c84f5768B83c41a71F9eba181802F`
-- Official-token `SlashPool.identityRegistry()` -> `0x68c451578B0E70e19A9369146061b5c311387cD3`
-- Official-token `AgentIdentityRegistry.slashRecorder()` -> `0xE9F0F8BE0B079d5A910e651aF62A1a3756057Dc8`
+- Official-token `SlashPool.identityRegistry()` -> `0x4D566c927d0B4d40AcC880b9729d8c5D905867D1`
+- Official-token `AgentIdentityRegistry.slashRecorder()` -> `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE`
 
 ## Stylus Check
 

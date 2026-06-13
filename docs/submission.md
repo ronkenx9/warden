@@ -46,7 +46,7 @@ For the stricter requirement-by-requirement status, use `docs/evidence-audit.md`
 1. Run `pnpm test` and show 27 passing Foundry tests.
 2. Run `pnpm e2e` and show the real local chain flow: deploy, sign, allowed trade, blocked revert, slash, reputation update.
 3. Run `pnpm verify:submission` as the full non-secret evidence gate, or run the individual commands if the video needs shorter clips.
-4. Run `pnpm preflight:robinhood` and show the verified TSLA vault, USDG SlashPool wiring, and current collateral status.
+4. Run `pnpm preflight:robinhood` and show the verified TSLA/AMD/AMZN/PLTR/NFLX vaults, USDG SlashPool wiring, and current collateral status.
 5. Run `pnpm env:robinhood`, then `pnpm live:robinhood`, and show the verified Robinhood TSLA vault rejecting a blocked `execute()` with no TSLA movement after `DEPLOYER_PRIVATE_KEY` is set locally.
 6. Run `pnpm demo` and show the encoded `execute` call plus monitor proof payload.
 7. Open `http://127.0.0.1:5173/`.
@@ -59,7 +59,7 @@ For the stricter requirement-by-requirement status, use `docs/evidence-audit.md`
 
 ## Current Limitations
 
-- Official Robinhood TSLA vault is live and verified; live policy activation/blocked execution still needs to be run against the deployed vault.
-- Live USDG slashing has collateral ready for the deployer fallback agent as of the latest `pnpm status:robinhood` read. Add `DEPLOYER_PRIVATE_KEY` to local `.env`, run `pnpm env:robinhood`, then run `pnpm live:robinhood:slash` to produce live slash/reputation evidence.
-- Rust Slash Pool passes `cargo stylus check` against Robinhood, but `cargo stylus deploy --estimate-gas` returned an unusable default deployer estimate, so the Stylus contract is not broadcast yet.
+- Official Robinhood TSLA/AMD/AMZN/PLTR/NFLX vaults are live and funded; the TSLA blocked-execution proof is recorded.
+- Live USDG slash/reputation evidence is recorded against agent identity id `1`.
+- Rust/Stylus SlashPool is deployed and activated on Robinhood Chain testnet.
 - The dashboard is a local demo surface, not a production portfolio application.

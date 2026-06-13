@@ -54,6 +54,29 @@ function eq<T>(actual: T, expected: T, label: string) {
   eq(p.validForDays, 14, "2 weeks -> 14 days");
 }
 
+// --- Parser: official Robinhood stock token aliases ---
+{
+  const amd = parsePolicy("AMD only, max €20");
+  eq(amd.assetSymbol, "AMD", "AMD asset symbol");
+  eq(amd.allowedAsset, deployment.amd, "AMD resolves to official Robinhood CA");
+  assert(amd.assetLive, "AMD is marked live");
+
+  const amzn = parsePolicy("AMZN only, max €20");
+  eq(amzn.assetSymbol, "AMZN", "AMZN asset symbol");
+  eq(amzn.allowedAsset, deployment.amzn, "AMZN resolves to official Robinhood CA");
+  assert(amzn.assetLive, "AMZN is marked live");
+
+  const pltr = parsePolicy("PLTR only, max €20");
+  eq(pltr.assetSymbol, "PLTR", "PLTR asset symbol");
+  eq(pltr.allowedAsset, deployment.pltr, "PLTR resolves to official Robinhood CA");
+  assert(pltr.assetLive, "PLTR is marked live");
+
+  const nflx = parsePolicy("NFLX only, max €20");
+  eq(nflx.assetSymbol, "NFLX", "NFLX asset symbol");
+  eq(nflx.allowedAsset, deployment.nflx, "NFLX resolves to official Robinhood CA");
+  assert(nflx.assetLive, "NFLX is marked live");
+}
+
 // --- Session: confirmation gate must precede commit ---
 {
   let s = newSession("+15551234567");
