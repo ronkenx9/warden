@@ -19,10 +19,13 @@ The Solidity WARDEN stack is live on Robinhood Chain testnet:
 - `AgentIdentityRegistry`: `0x4D566c927d0B4d40AcC880b9729d8c5D905867D1`
 - `SlashPool`: `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE`
 - `Stylus SlashPool`: `0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8`
+- `AgentMarketplace`: `0x2d7Ccd866849e9806e2C54CF4a904394440e1c6A`
 
 The vault set wraps official Robinhood Chain testnet TSLA, AMD, AMZN, PLTR, and NFLX. Each vault currently holds `1` deposited stock token.
 
 Each current vault is paused-capable: `pause()` and `unpause()` are owner-only, pause blocks new policy activation and agent execution, and user withdrawals remain available.
+
+The v2 AgentMarketplace is deployed as a testnet registry and fee primitive. It uses official USDG as the fee token and has a seeded YieldAgent TSLA listing for agent id `1` at `50` bps. The broader production marketplace still needs external audit and independent operators.
 
 ## What is the exact user policy?
 

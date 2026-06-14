@@ -30,6 +30,7 @@ This audit maps the PRD promises to the strongest current evidence in the repo o
 | Deployed on Robinhood Chain testnet | Done | `docs/deployments/robinhood-testnet-46630.md`, verified Blockscout links, `pnpm status:robinhood` | None for Solidity stack. |
 | Deployed on Arbitrum One | Done | Arbitrum One demo stack recorded in `docs/deployments/arbitrum-one-42161.md` and `docs/deployments/arbitrum-one-42161.json`; code reads confirmed non-empty bytecode for WARDENVault and SlashPool | None for mock demo stack. |
 | Dashboard and agent marketplace exist for demo | Done | `packages/dashboard`, `pnpm build`, dashboard copy references the hardened official Robinhood multi-stock stack | Run `pnpm dev` for recording. |
+| AgentMarketplace registry and fee accounting are deployed | Done | `packages/contracts/src/AgentMarketplace.sol`, `packages/contracts/test/AgentMarketplace.t.sol`, deploy script `DeployAgentMarketplace.s.sol`, and Robinhood Chain testnet address `0x2d7Ccd866849e9806e2C54CF4a904394440e1c6A` seeded with agent id `1` for official TSLA | Production operator economy still needs independent operators and audit. |
 | Adversarial fuzzing documented | Done | `packages/contracts/test/WARDENVaultFuzz.t.sol`, submission evidence matrix, and final submission fuzzing note | None for hackathon submission. |
 | Audit/compliance production gates documented | Done | `docs/production-readiness.md` audit scope and compliance scope | External audit and legal/compliance approval still required before retail launch. |
 
@@ -48,6 +49,7 @@ Hardened official-token stack:
 | AgentIdentityRegistry | `0x4D566c927d0B4d40AcC880b9729d8c5D905867D1` |
 | SlashPool | `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE` |
 | Stylus SlashPool | `0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8` |
+| AgentMarketplace | `0x2d7Ccd866849e9806e2C54CF4a904394440e1c6A` |
 
 Official Robinhood Chain tokens:
 

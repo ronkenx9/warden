@@ -35,6 +35,7 @@ WARDEN rejects the trade with `TradingWindowClosed()`. No TSLA leaves the vault.
 - Live Robinhood Chain proof that a blocked TSLA trade reverts before funds move.
 - Live slash/reputation proof against the agent identity.
 - Rust/Stylus Slash Pool deployed and activated on Robinhood Chain testnet.
+- AgentMarketplace registry/fee primitive deployed on Robinhood Chain testnet and seeded with the YieldAgent TSLA listing.
 - Arbitrum One demo stack deployed with mock stock/collateral assets.
 - x402-shaped monitor service with payment-header validation and ERC-20 settlement reconciliation.
 - Production hardening path: monitor registry, timelock deploy script, ownership transfer script, emergency pause, and incident runbook.

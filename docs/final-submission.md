@@ -18,6 +18,8 @@ The demo uses official Robinhood Chain testnet stock tokens and USDG contracts. 
 
 The monitor service is x402-shaped: `GET /quote` returns an exact-payment quote, `POST /violations` requires an `x-payment` header matching the quote, reconciles the payment transaction against ERC-20 `Transfer` logs, and then submits the resulting proof hash to `SlashPool.submitViolation`. The production contract version also includes a `MonitorRegistry` so independent runners can self-register endpoint and payment metadata before submitting proofs.
 
+WARDEN v2 also has a live Robinhood Chain testnet `AgentMarketplace` registry and fee-accounting primitive. It is seeded with the YieldAgent TSLA listing, uses official USDG as the fee token, and authorizes the TSLA WARDENVault as its fee router. This proves the bonded-agent rental layer on-chain while keeping the production operator economy out of scope until audit and independent operators are in place.
+
 ## Built For
 
 - Overall track: consumer-protection infrastructure for tokenized RWA portfolios.
@@ -58,6 +60,7 @@ Contracts:
 | AgentIdentityRegistry | `0x4D566c927d0B4d40AcC880b9729d8c5D905867D1` |
 | SlashPool | `0x6745b7CE66756085cF1254d2028EB9e3b4407bbE` |
 | Stylus SlashPool | `0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8` |
+| AgentMarketplace | `0x2d7Ccd866849e9806e2C54CF4a904394440e1c6A` |
 
 Official Robinhood Chain testnet tokens:
 
@@ -142,6 +145,7 @@ Adversarial fuzzing coverage is included in `packages/contracts/test/WARDENVault
 - The live Robinhood vault set currently has official TSLA, AMD, AMZN, PLTR, and NFLX deposited.
 - Live USDG collateral is funded and the live slash/reputation proof has been recorded.
 - The Rust/Stylus Slash Pool is deployed and activated on Robinhood Chain testnet.
+- The AgentMarketplace registry/fee primitive is deployed on Robinhood Chain testnet and seeded with the YieldAgent TSLA listing.
 - The iMessage front door is in development. The natural-language-to-signed-policy path is implemented and tested in `packages/imessage`, but the live texting transport is not yet shipped; the landing page presents it as a waitlist feature, not a live capability.
 - The Arbitrum One deployment is a mock demo stack. Do not describe it as wrapping official Robinhood stock tokens unless Robinhood publishes official stock contracts on Arbitrum One.
 - The repo includes production admin/timelock scripts, `Ownable2Step` SlashPool ownership, monitor registry, and x402 settlement reconciliation.

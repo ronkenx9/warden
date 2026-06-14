@@ -8,7 +8,7 @@
 > the vault enforces. Good agents earn fees and reputation; agents that break the
 > policy are slashed and remembered.
 
-Status: PRD / in progress. Supersedes the solo framing in `docs/final-submission.md` (kept as the v1 record).
+Status: deployed testnet primitive. Supersedes the solo framing in `docs/final-submission.md` (kept as the v1 record).
 
 ---
 
@@ -160,10 +160,11 @@ costs the bond.
 **In (this iteration):**
 - PRD (this doc).
 - Marketplace **frontend** reframe + rent framing.
-- Fee/marketplace **contract spec + invariants** (above).
+- `AgentMarketplace` listing + fee-accounting contract with invariants.
+- Robinhood Chain testnet deployment seeded with the YieldAgent TSLA listing.
 
 **Out (gated next steps, require audit-before-deploy):**
-- Deploying `AgentMarketplace` + fee accounting to Robinhood Chain.
+- Independent audit before production use.
 - Subscription / performance-fee models.
 - Operator onboarding UI (list/stake/claim).
 - On-chain ranking.
@@ -184,8 +185,23 @@ relevant ones are now fixed:
 - 📝 **Assumption** — the conservation invariant assumes a non-deflationary fee
   token (USDG qualifies).
 
-16 tests pass, incl. fuzz fee-math/conservation, per-agent isolation, and the
-fee-iff-allowed integration test. No external audit needed for testnet.
+16 marketplace-focused tests pass, incl. fuzz fee-math/conservation,
+per-agent isolation, and the fee-iff-allowed integration test. The full
+contracts suite has 55 passing tests after the marketplace addition. No external
+audit needed for testnet.
+
+## 7c. Live Robinhood Chain marketplace deployment
+
+`AgentMarketplace` is deployed on Robinhood Chain testnet:
+
+- address: `0x2d7Ccd866849e9806e2C54CF4a904394440e1c6A`
+- deploy tx: `0x6132f6b50947f787dfb8f394c76b05b73aa6b8d2de3f36030c963fcaac6de812`
+- fee token: official USDG `0x7E955252E15c84f5768B83c41a71F9eba181802F`
+- authorized router: TSLA WARDENVault `0x02e658d8F20bbF94d85D0eCC0365Ab4aa5c26Daf`
+- seeded listing: agent id `1`, official TSLA, `50` bps usage fee,
+  `100000000` minimum bond, `warden://yieldagent/official-tsla-guarded`
+
+This is a testnet marketplace primitive, not a production operator economy.
 
 ## 8. Risks & mitigations
 - **Money-contract risk** — new fee logic is the highest-risk surface. Mitigation:
@@ -207,8 +223,8 @@ That two-sided economy — not policy-feature count — is the defensible positi
 ---
 
 ## 10. Milestones
-1. ✅ PRD + marketplace frontend + fee spec (this iteration).
-2. ⏳ `AgentMarketplace` + fee accounting contracts + tests/invariants.
-3. ⏳ Independent audit of the fee/marketplace contracts.
-4. ⏳ Deploy to Robinhood Chain testnet (gated on audit).
+1. ✅ PRD + marketplace frontend + fee spec.
+2. ✅ `AgentMarketplace` + fee accounting contracts + tests/invariants.
+3. ✅ Deploy to Robinhood Chain testnet.
+4. ⏳ Independent audit of the fee/marketplace contracts before production.
 5. ⏳ Operator onboarding UI (list / stake / claim).

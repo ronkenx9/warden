@@ -103,13 +103,37 @@ Live proof postconditions from `pnpm status:robinhood` at block `74924490`:
 - SlashPool stake: `0 USDG` after stake and slash
 - current live slash proof: `0xde7d99c1f3e29f1fe7217db15395068f0730672ad9ca0f8b92b1900d72ef9b51`
 
-Source verification is complete on Robinhood's Blockscout explorer:
+## AgentMarketplace v2
+
+Date: 2026-06-14
+Deployer: `0x6727A665ef9257E2A4e9A4ED58B9136f62b0E1b1`
+
+The v2 marketplace registry and fee-accounting contract is deployed on Robinhood Chain testnet and seeded with the YieldAgent TSLA listing. It uses official USDG as the fee token and authorizes the live TSLA paused-capable WARDENVault as the fee router for post-execution fee records.
+
+| Contract / Action | Address | Transaction |
+| --- | --- | --- |
+| AgentMarketplace | `0x2d7Ccd866849e9806e2C54CF4a904394440e1c6A` | `0x6132f6b50947f787dfb8f394c76b05b73aa6b8d2de3f36030c963fcaac6de812` |
+| Authorize TSLA vault fee router | `0x02e658d8F20bbF94d85D0eCC0365Ab4aa5c26Daf` | `0x0002a87912c4ec5b42ed0dd8bc1d906e0fa2e25c56c80c959945ecfb55c4909f` |
+| Seed YieldAgent TSLA listing | `0x2d7Ccd866849e9806e2C54CF4a904394440e1c6A` | `0x0da7d9d36a65f86bd0e1765138541349e62caa746ae561113bfeecc474900265` |
+
+Seed listing:
+
+- agent id: `1`
+- operator: `0x6727A665ef9257E2A4e9A4ED58B9136f62b0E1b1`
+- asset: official TSLA `0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E`
+- fee token: official USDG `0x7E955252E15c84f5768B83c41a71F9eba181802F`
+- usage fee: `50` bps
+- minimum bond: `100000000`
+- strategy URI: `warden://yieldagent/official-tsla-guarded`
+
+Explorer links:
 
 - [PermissionEngine](https://explorer.testnet.chain.robinhood.com/address/0x049527f5331faea8f0e9e86be8fddcb86bdee1ba)
 - [TSLA WARDENVault](https://explorer.testnet.chain.robinhood.com/address/0x02e658d8f20bbf94d85d0ecc0365ab4aa5c26daf)
 - [AgentIdentityRegistry](https://explorer.testnet.chain.robinhood.com/address/0x4d566c927d0b4d40acc880b9729d8c5d905867d1)
 - [SlashPool](https://explorer.testnet.chain.robinhood.com/address/0x6745b7ce66756085cf1254d2028eb9e3b4407bbe)
 - [Stylus SlashPool](https://explorer.testnet.chain.robinhood.com/address/0xb50d8f8eb201124e5e1cea1de2bdb49c6ae513c8)
+- [AgentMarketplace](https://explorer.testnet.chain.robinhood.com/address/0x2d7ccd866849e9806e2c54cf4a904394440e1c6a)
 
 ## Smoke Reads
 
