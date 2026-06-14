@@ -553,6 +553,16 @@ input {
   background: linear-gradient(90deg, rgba(7, 8, 9, 0.55) 0%, rgba(7, 8, 9, 0.15) 45%, transparent 75%);
 }
 
+/* the waitlist sits on the bright bloom plate — darken it so the form + copy
+   stay readable, while the image still reads through */
+.waitlist .plate-bg {
+  opacity: 0.55;
+}
+
+.waitlist .plate-bg::after {
+  background: linear-gradient(180deg, rgba(7, 8, 9, 0.7) 0%, rgba(7, 8, 9, 0.82) 100%);
+}
+
 .steps {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
