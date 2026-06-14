@@ -51,6 +51,9 @@ importers:
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
+      viem:
+        specifier: ^2.21.54
+        version: 2.50.4(typescript@5.9.3)
       vite:
         specifier: ^8.0.16
         version: 8.0.16(esbuild@0.28.1)(tsx@4.22.4)

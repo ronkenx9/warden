@@ -11,6 +11,7 @@ import {
   Vault,
 } from "lucide-react";
 import swarm from "./swarm-data.json";
+import { Playground } from "./Playground.js";
 import "./styles.css";
 
 /* ----------------------------------------------------------------
@@ -84,7 +85,8 @@ function Nav() {
       <div className="nav-links">
         <a href="#mechanism">Mechanism</a>
         <a href="#live">Live on Robinhood</a>
-        <a href="#swarm">Swarm</a>
+        <a href="#marketplace">Marketplace</a>
+        <a href="#playground">Playground</a>
         <a href="#waitlist">Text the leash</a>
       </div>
     </nav>
@@ -270,14 +272,14 @@ function Live() {
               </div>
               <div className="split">
                 <div>
-                  <span className="k">Collateral</span>
+                  <span className="k">Operator bond</span>
                   <strong>100</strong>
-                  <small>USDG staked on the watched agent</small>
+                  <small>USDG staked by the agent operator</small>
                 </div>
                 <div>
                   <span className="k">On proof</span>
                   <strong>1</strong>
-                  <small>violation slashed to the owner</small>
+                  <small>violation slashed to the renter</small>
                 </div>
               </div>
             </div>
@@ -332,18 +334,20 @@ function Live() {
   );
 }
 
-function Swarm() {
+function Marketplace() {
   const ref = useReveal<HTMLElement>();
   const m = swarm.metrics;
   return (
-    <section className="section" id="swarm" ref={ref}>
+    <section className="section" id="marketplace" ref={ref}>
       <div className="wrap">
         <div className="section-head reveal">
-          <span className="section-kicker">Autonomous swarm · {swarm.agentCount} agents · {swarm.rounds} rounds</span>
-          <h2>We let a swarm of agents attack it.</h2>
+          <span className="section-kicker">Agent marketplace · bonded · two-sided</span>
+          <h2>You don&apos;t build the agent. You rent one.</h2>
           <p>
-            {m.allowedTrades} allowed trades, {m.violationAttempts} violation attempts,{" "}
-            {m.fundsMovedOnViolation} funds moved. Reputation tracks the leash — automatically.
+            Operators publish trading agents and stake a bond. You browse by reputation, pick
+            one, and delegate under your policy. It earns a fee on every allowed trade — and if
+            it breaks your rule, its bond pays you. {m.allowedTrades} allowed, {m.violationAttempts}{" "}
+            blocked, {m.fundsMovedOnViolation} funds moved.
           </p>
         </div>
         <div className="swarm-grid">
@@ -351,26 +355,33 @@ function Swarm() {
             <div className="core">
               <div className="card-label">
                 <div>
-                  <span className="k">Agent marketplace</span>
-                  <h3>Portable identity &amp; reputation</h3>
+                  <span className="k">Listings · live swarm</span>
+                  <h3>Bonded agents for rent</h3>
                 </div>
               </div>
               <div className="agent-list">
-                {swarm.agents.map((a) => (
-                  <div className="agent" key={a.name}>
-                    <div className="score">{a.score}</div>
-                    <div className="who">
-                      <strong>{a.name}</strong>
-                      <span>
-                        {a.personality} · {a.stake} stake
-                      </span>
+                {swarm.agents.map((a, i) => {
+                  const feeBps = 25 + (i % 5) * 10;
+                  const slashed = a.violations > 0;
+                  return (
+                    <div className="agent" key={a.name}>
+                      <div className="score" title="reputation score">{a.score}</div>
+                      <div className="who">
+                        <strong>{a.name}</strong>
+                        <span>
+                          {a.personality} · bond {a.stake} · {feeBps} bps fee
+                        </span>
+                      </div>
+                      <div className="rent">
+                        {slashed ? (
+                          <span className="rent-bad">slashed · {a.violations}</span>
+                        ) : (
+                          <a className="rent-btn" href="#playground">Rent</a>
+                        )}
+                      </div>
                     </div>
-                    <div className="meta">
-                      <span>{a.violations} violations</span>
-                      <b className={a.violations > 0 ? "bad" : "ok"}>{a.state}</b>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -378,8 +389,8 @@ function Swarm() {
             <div className="core">
               <div className="card-label">
                 <div>
-                  <span className="k">Demo timeline</span>
-                  <h3>Agents vs. policy, live</h3>
+                  <span className="k">Live enforcement feed</span>
+                  <h3>Agents vs. policy</h3>
                 </div>
               </div>
               <div className="timeline">
@@ -566,7 +577,8 @@ function App() {
         <Intro />
         <Mechanism />
         <Live />
-        <Swarm />
+        <Marketplace />
+        <Playground />
         <Waitlist />
       </main>
       <Footer />
