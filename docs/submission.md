@@ -2,7 +2,7 @@
 
 ## One-Liner
 
-WARDEN is an ERC-4626 agent vault that enforces retail tokenized-stock portfolio rules on-chain, then slashes agent collateral and updates portable reputation when a monitor proves a violation.
+WARDEN is a bonded marketplace for AI trading agents. Users rent an agent, sign one tokenized-stock policy, and the ERC-4626 vault enforces that policy on-chain before funds can move.
 
 For the copy-ready submission text, contract table, and final caveats, use `docs/final-submission.md`. For the exact recording flow, use `docs/recording-runbook.md`. For a safe 24/7 status loop, use `docs/heartbeat-loop.md`. For the latest saved public-chain state, use `docs/live-evidence-2026-06-01.md`. For the strict done/open audit, use `docs/completion-audit-2026-06-01.md`. For judging calls, use `docs/judge-qa.md`.
 
@@ -12,10 +12,13 @@ Sarah holds tokenized TSLA. She signs one policy: TSLA only, max 50 EUR per trad
 
 At 01:30 CET, YieldAgent attempts a swap. `WARDENVault.execute()` reverts with `TradingWindowClosed()`. No TSLA leaves the vault. A monitor prepares a proof hash, quotes a paid x402-style submission, calls `SlashPool.submitViolation`, Sarah receives slash collateral, and YieldAgent's ERC-8004-style NFT records the violation.
 
+V2 adds the missing market layer: YieldAgent is listed in `AgentMarketplace` with a bond requirement, official TSLA asset scope, official USDG fee token, and a capped `50` bps usage fee. The operator earns only after allowed execution; blocked trades pay nothing and can still cost the bond.
+
 ## Track Mapping
 
 - Overall: consumer-protection infrastructure for tokenized stock portfolios.
 - Agentic: autonomous agent has bounded delegated authority and economic accountability.
+- Marketplace: third-party agents can be listed, rented, fee-metered, and judged by portable reputation.
 - Stylus: Rust/Stylus slash pool compiles to WASM, exports a Solidity ABI, and mirrors the tested Solidity slashing path.
 - Robinhood Chain: vault wraps tokenized stock assets and uses Sarah's retail TSLA policy as the primary demo.
 
@@ -42,6 +45,8 @@ For the stricter requirement-by-requirement status, use `docs/evidence-audit.md`
 | Contracts are explorer-verified | Robinhood Blockscout links in `docs/deployments/robinhood-testnet-46630.md` |
 | Live deployment status is reproducible without a key | `pnpm preflight:robinhood` / `pnpm status:robinhood` |
 | Live Robinhood blocked execution can be demonstrated | `pnpm live:robinhood` with `WARDEN_LIVE_MODE=blocked-now` |
+| Agent marketplace registry is live | `AgentMarketplace` at `0x2d7Ccd866849e9806e2C54CF4a904394440e1c6A`, seeded listing tx `0x0da7d9d36a65f86bd0e1765138541349e62caa746ae561113bfeecc474900265` |
+| Fee accounting is router-gated and scoped per renter/agent | `packages/contracts/src/AgentMarketplace.sol`, `packages/contracts/test/AgentMarketplace.t.sol` |
 
 ## Recording Checklist
 
@@ -56,14 +61,30 @@ For the stricter requirement-by-requirement status, use `docs/evidence-audit.md`
 9. Show the red `TradingWindowClosed()` incident.
 10. Show x402 monitor quote, matching `x-payment` header, and proof hash.
 11. Show Slash Pool before/after from local E2E, or from live Robinhood only after `pnpm live:robinhood:slash` succeeds.
-12. Show YieldAgent marketplace row as the intended reputation outcome; call it live only after the signed slash proof records the violation.
-13. Close with the invariant: the agent tried; Solidity said no; no funds moved.
+12. Show the live AgentMarketplace listing: agent id `1`, official TSLA scope, official USDG fee token, `50` bps fee, `100000000` minimum bond, TSLA vault authorized as router.
+13. Show YieldAgent marketplace row as the v2 outcome: rent by bond, fee, and reputation.
+14. Close with the invariant: the agent tried; Solidity said no; no funds moved.
+
+## Demo Video
+
+The current HTML reel includes the v2 marketplace slide:
+
+```bash
+pnpm demo:video
+```
+
+Output:
+
+```text
+warden_demo.mp4
+```
 
 ## Current Limitations
 
 - Official Robinhood TSLA/AMD/AMZN/PLTR/NFLX paused-capable vaults are live and funded; the TSLA blocked-execution proof is recorded.
 - Live USDG slash/reputation evidence is recorded against agent identity id `1`.
 - Rust/Stylus SlashPool is deployed and activated on Robinhood Chain testnet.
+- AgentMarketplace registry/fee primitive is live on Robinhood Chain testnet and seeded with YieldAgent TSLA; a production marketplace still needs external audit and independent operators.
 - Emergency pause blocks policy activation and agent execution while preserving user withdrawals; production still needs multisig/timelock ownership.
 - The repo includes a self-registration path for monitor runners and x402 payment settlement reconciliation; live production still needs independent third-party operators.
 - The dashboard is a local demo surface, not a production portfolio application.

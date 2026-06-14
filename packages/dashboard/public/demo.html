@@ -211,6 +211,47 @@
       .stat strong { font-family: var(--font-display); font-weight: 800; font-size: 60px; display: block; line-height: 1; }
       .stat span { color: var(--dusk-dim); font-size: 15px; margin-top: 8px; display: block; }
 
+      /* marketplace */
+      .market-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 22px; margin-top: 24px; max-width: 1060px; }
+      .agent-card {
+        border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 18px;
+        background: rgba(255,255,255,0.055);
+        padding: 24px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 30px 80px rgba(0,0,0,0.28);
+      }
+      .agent-head { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
+      .agent-name { font-family: var(--font-display); font-size: 34px; font-weight: 800; line-height: 1; }
+      .agent-sub { color: var(--dusk); font-size: 16px; margin-top: 8px; }
+      .pill {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--cyan);
+        border: 1px solid rgba(56,225,255,0.42);
+        background: rgba(56,225,255,0.1);
+        padding: 8px 12px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .market-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 22px; }
+      .metric { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 14px; }
+      .metric strong { font-family: var(--font-display); font-size: 34px; line-height: 1; display: block; }
+      .metric span { color: var(--dusk-dim); font-size: 13px; margin-top: 6px; display: block; }
+      .contract-lines { display: grid; gap: 12px; }
+      .contract-line {
+        font-family: var(--font-mono);
+        font-size: 15px;
+        line-height: 1.35;
+        color: var(--dusk);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: rgba(0,0,0,0.16);
+      }
+      .contract-line b { color: var(--mist); font-weight: 700; }
+
       /* progress + chrome */
       #bar { position: absolute; top: 0; left: 0; height: 3px; width: 0; background: var(--spectrum); z-index: 10; transition: width 0.2s linear; }
       #ticks { position: absolute; bottom: 26px; left: 0; right: 0; display: flex; gap: 7px; justify-content: center; z-index: 10; }
@@ -225,6 +266,17 @@
       }
       #replay.show { display: grid; }
       #replay div { font-family: var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; font-size: 16px; color: var(--mist); border: 1px solid rgba(255,255,255,0.3); padding: 16px 28px; border-radius: 999px; }
+      body.capture .slide { transition: none; }
+      body.capture .slide.active .plate { animation: none; }
+      body.capture .up {
+        opacity: 1;
+        transform: none;
+        filter: none;
+      }
+      body.capture .slide.active .up { animation: none; }
+      body.capture .leash-line { width: 360px; }
+      body.capture #hint,
+      body.capture #replay { display: none; }
     </style>
   </head>
   <body>
@@ -273,7 +325,7 @@
               <div class="step up d1"><div class="n">01</div><h3>Sign one policy</h3><p>Asset, max notional, blocked hours, expiry. One EIP-712 signature.</p></div>
               <div class="step up d1"><div class="n">02</div><h3>Delegate the agent</h3><p>A session key acts only through the vault. Never holds the funds.</p></div>
               <div class="step up d2"><div class="n">03</div><h3>Violations revert</h3><p>Checked in Solidity before execution. Off-policy trades revert.</p></div>
-              <div class="step up d2"><div class="n">04</div><h3>Slash &amp; remember</h3><p>Collateral slashed to the owner. Recorded on a portable identity.</p></div>
+              <div class="step up d2"><div class="n">04</div><h3>Slash &amp; remember</h3><p>Collateral slashed to the owner. Reputation follows the agent.</p></div>
             </div>
           </div>
         </section>
@@ -317,7 +369,37 @@
           </div>
         </section>
 
-        <!-- 8 — coming soon -->
+        <!-- 8 — marketplace -->
+        <section class="slide middle" data-dur="6600">
+          <div class="scrim full"></div>
+          <div class="content">
+            <div class="kicker up">V2 · Bonded agent marketplace</div>
+            <h1 class="up d1" style="font-size:66px">Rent agents by <span class="g">bond, fee, reputation.</span></h1>
+            <div class="market-grid">
+              <div class="agent-card up d2">
+                <div class="agent-head">
+                  <div>
+                    <div class="agent-name">YieldAgent #1</div>
+                    <div class="agent-sub">Official TSLA strategy · Robinhood Chain testnet</div>
+                  </div>
+                  <div class="pill">Live listing</div>
+                </div>
+                <div class="market-metrics">
+                  <div class="metric"><strong>50</strong><span>bps usage fee</span></div>
+                  <div class="metric"><strong>100</strong><span>USDG min bond</span></div>
+                  <div class="metric"><strong>2</strong><span>recorded violations</span></div>
+                </div>
+              </div>
+              <div class="contract-lines up d3">
+                <div class="contract-line"><b>AgentMarketplace</b><br />0x2d7Ccd866849e9806e2C54CF4a904394440e1c6A</div>
+                <div class="contract-line"><b>Fee token</b><br />official USDG · 0x7E955252E15c84f5768B83c41a71F9eba181802F</div>
+                <div class="contract-line"><b>Router</b><br />TSLA vault only · fees after allowed execution</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 9 — coming soon -->
         <section class="slide" data-dur="5400">
           <div class="plate" style="background-image:url('/img/scene-rules-bloom.png')"></div>
           <div class="scrim"></div>
@@ -331,7 +413,7 @@
           </div>
         </section>
 
-        <!-- 9 — close -->
+        <!-- 10 — close -->
         <section class="slide center" data-dur="4600">
           <div class="plate" style="background-image:url('/img/hero-cinematic.png')"></div>
           <div class="scrim"></div>
@@ -339,7 +421,7 @@
             <div class="big up">WARDEN</div>
             <div class="tagline up d2">Cute agent. Hard leash.</div>
             <p class="lede up d3" style="margin:18px auto 0;color:var(--dusk-dim);font-size:16px;font-family:var(--font-mono);max-width:none">
-              Live on Robinhood Chain · github.com/ronkenx9/warden
+              Vaults + SlashPool + AgentMarketplace live on Robinhood Chain · github.com/ronkenx9/warden
             </p>
           </div>
         </section>
@@ -357,6 +439,8 @@
         const bar = document.getElementById("bar");
         const ticksWrap = document.getElementById("ticks");
         const replay = document.getElementById("replay");
+        const params = new URLSearchParams(location.search);
+        const capture = params.get("capture") === "1";
 
         slides.forEach(() => {
           const t = document.createElement("div");
@@ -368,11 +452,38 @@
         let i = 0, paused = false, t0 = 0, raf = 0, elapsed = 0;
 
         function dur(n) { return parseInt(slides[n].dataset.dur, 10) || 4500; }
+        function totalDuration() { return slides.reduce((sum, _slide, n) => sum + dur(n), 0); }
 
         function show(n) {
           slides.forEach((s, k) => s.classList.toggle("active", k === n));
           ticks.forEach((t, k) => t.classList.toggle("on", k <= n));
           i = n; elapsed = 0; t0 = performance.now();
+        }
+
+        function renderAt(ms) {
+          document.body.classList.add("capture");
+          const total = totalDuration();
+          const clamped = Math.max(0, Math.min(ms, total - 1));
+          let acc = 0;
+          let slide = 0;
+          for (let n = 0; n < slides.length; n += 1) {
+            const next = acc + dur(n);
+            if (clamped < next) { slide = n; break; }
+            acc = next;
+          }
+          show(slide);
+          const p = clamped / total;
+          bar.style.width = (p * 100).toFixed(2) + "%";
+          window.__WARDEN_CAPTURE_READY = true;
+        }
+
+        window.__WARDEN_RENDER_AT = renderAt;
+
+        if (capture) {
+          const at = parseInt(params.get("t") || "0", 10);
+          renderAt(Number.isFinite(at) ? at : 0);
+          window.__WARDEN_DEMO_DURATION_MS = totalDuration();
+          return;
         }
 
         function tick(now) {

@@ -8,6 +8,7 @@
 6. Solidity rejects the request with `TradingWindowClosed`; no funds move.
 7. A monitor packages the failed-call simulation into a proof hash.
 8. `SlashPool` slashes YieldAgent's USDG collateral, pays Sarah, and records the proof on the agent NFT.
+9. The v2 marketplace makes this useful between strangers: YieldAgent is listed with a bond, a capped fee, TSLA scope, and portable reputation.
 
 ## Local Commands
 
@@ -19,6 +20,7 @@ pnpm demo
 pnpm e2e
 pnpm verify:submission
 pnpm dev
+pnpm demo:video
 ```
 
 `pnpm verify:submission` is the full non-secret verification gate for recording prep. It runs tests, builds, demos, local E2E, Stylus check, and Robinhood preflight without requiring `DEPLOYER_PRIVATE_KEY`.
@@ -51,5 +53,7 @@ The monitor demo prints an x402-style `402 Payment Required` quote for `/violati
 The E2E demo starts Anvil, deploys the contracts, uses Sarah's typed-data signature, lets YieldAgent call `execute()`, proves the 01:30 CET path reverts, then submits the monitor proof to slash 100 USDC and record reputation.
 
 Open `http://127.0.0.1:5173/` during the video recording to show the dashboard state: Sarah's official TSLA vault, policy checks, blocked trade, monitor proof, slash result, verified Robinhood deployment, and agent marketplace reputation.
+
+Open `http://127.0.0.1:5173/demo.html` or render `pnpm demo:video` for the HTML reel. The reel includes the v2 AgentMarketplace slide with the live address `0x2d7Ccd866849e9806e2C54CF4a904394440e1c6A`, official USDG fee token, and seeded YieldAgent TSLA listing.
 
 Use `docs/submission.md` as the final recording checklist.

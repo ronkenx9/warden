@@ -8,7 +8,7 @@ WARDEN
 
 ## One-Liner
 
-WARDEN is a trustless ERC-4626 vault for tokenized stocks that enforces AI-agent portfolio rules on-chain, then slashes collateral and updates portable reputation when a monitor proves a violation.
+WARDEN is a bonded marketplace for AI trading agents where tokenized-stock vaults enforce each user's rules on-chain before funds can move.
 
 ## Short Description
 
@@ -117,7 +117,8 @@ Then open `http://127.0.0.1:5173/`.
 2. `pnpm test`: policy rules, revert cases, no-funds-moved check, fuzz tests, slash/reputation tests.
 3. `pnpm e2e`: local end-to-end Sarah/YieldAgent/monitor path with allowed trade, blocked trade, slash, and reputation update.
 4. `pnpm live:robinhood`: live Robinhood blocked execution reverting with `TradingWindowClosed()` and unchanged TSLA balances.
-5. Dashboard: Sarah's vault, blocked incident, x402-style monitor proof, live slash/reputation outcome, and the funded official-stock vault set.
+5. Dashboard: Sarah's vault, blocked incident, x402-style monitor proof, live slash/reputation outcome, funded official-stock vault set, and v2 marketplace listing.
+6. `pnpm demo:video`: renders the HTML reel with the v2 AgentMarketplace slide.
 
 Adversarial fuzzing coverage is included in `packages/contracts/test/WARDENVaultFuzz.t.sol`. The fuzz suite stresses policy limit boundaries, every minute inside the midnight-wrapped CET blocked window, allowed-window execution, and delegated-caller restrictions, so the demo claim is not based only on one hand-picked Sarah scenario.
 

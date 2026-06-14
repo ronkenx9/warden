@@ -15,6 +15,7 @@ Recommended tab labels:
 - `evidence`
 - `live`
 - `dashboard`
+- `video`
 - `heartbeat` if you want a 24/7 read-only status loop
 
 Keep `.env` private. Do not show `DEPLOYER_PRIVATE_KEY` on screen.
@@ -123,8 +124,43 @@ Narration path:
 2. YieldAgent attempt at a blocked time.
 3. `TradingWindowClosed()` as the policy boundary.
 4. x402-shaped monitor proof.
-5. SlashPool and agent marketplace reputation as the local E2E/intended outcome; present it as live only after `pnpm live:robinhood:slash` succeeds.
-6. Closing invariant: the agent tried, the vault enforced, no funds moved.
+5. SlashPool and agent marketplace reputation as the v2 outcome.
+6. The live AgentMarketplace listing: agent id `1`, official TSLA, official USDG fee token, `50` bps fee, and `100000000` minimum bond.
+7. Closing invariant: the agent tried, the vault enforced, no funds moved.
+
+## Tab 4: HTML Demo Video
+
+The short HTML reel is source-controlled at:
+
+```text
+packages/dashboard/public/demo.html
+```
+
+Preview it at:
+
+```text
+http://127.0.0.1:5173/demo.html
+```
+
+Render the MP4:
+
+```bash
+pnpm demo:video
+```
+
+Output:
+
+```text
+warden_demo.mp4
+```
+
+The current reel includes:
+
+- v1 hard-leash story: signed policy, blocked trade, `TradingWindowClosed`, zero tokens moved;
+- live multi-stock Robinhood vault set: TSLA, AMD, AMZN, PLTR, NFLX;
+- live slash/reputation proof;
+- v2 AgentMarketplace slide with live address `0x2d7Ccd866849e9806e2C54CF4a904394440e1c6A`;
+- honest iMessage waitlist framing.
 
 ## Submission Caveats
 
@@ -135,6 +171,7 @@ Keep these caveats exact until the signed live proof is recorded:
 - The watched agent has `100 USDG`, enough for one default live slash.
 - Live slash/reputation proof still requires local `DEPLOYER_PRIVATE_KEY`.
 - Rust/Stylus Slash Pool is deployed and activated on Robinhood Chain testnet.
+- AgentMarketplace registry/fee primitive is deployed on Robinhood Chain testnet and seeded with YieldAgent TSLA; production marketplace operation still needs audit and independent operators.
 - Arbitrum One deployment exists as a mock demo stack; do not claim it wraps official Robinhood stock tokens.
 
 ## Closing Script
