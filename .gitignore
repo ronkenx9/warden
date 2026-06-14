@@ -9,3 +9,8 @@ packages/contracts/broadcast/
 .DS_Store
 .warden/
 logs/
+
+# loose source images (duplicated into packages/dashboard/public/img)
+/Hero image.png
+/second images.png
+/fotter image.png

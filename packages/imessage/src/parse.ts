@@ -7,6 +7,7 @@ import { KNOWN_ASSETS } from "./config.js";
 export type DraftPolicy = {
   assetSymbol: string;
   allowedAsset: Address;
+  vault: Address; // the asset's dedicated ERC-4626 vault to activate the policy on
   assetLive: boolean;
   maxTradeValueEur: bigint; // 18-decimal wei, matching parseEther("50")
   maxTradeValueEurLabel: string; // e.g. "50"
@@ -126,6 +127,7 @@ export function parsePolicy(text: string): DraftPolicy {
   return {
     assetSymbol,
     allowedAsset: asset.address,
+    vault: asset.vault,
     assetLive: asset.live,
     maxTradeValueEur: parseEther(maxLabel),
     maxTradeValueEurLabel: maxLabel,
@@ -143,7 +145,7 @@ const FIELD_GROUPS = ["asset", "maxTradeValue", "tradingWindow", "validity"] as 
 type FieldGroup = (typeof FIELD_GROUPS)[number];
 
 const GROUP_KEYS: Record<FieldGroup, (keyof DraftPolicy)[]> = {
-  asset: ["assetSymbol", "allowedAsset", "assetLive"],
+  asset: ["assetSymbol", "allowedAsset", "vault", "assetLive"],
   maxTradeValue: ["maxTradeValueEur", "maxTradeValueEurLabel"],
   tradingWindow: ["forbiddenStartMinute", "forbiddenEndMinute", "forbiddenLabel"],
   validity: ["validForDays"],

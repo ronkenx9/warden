@@ -120,11 +120,12 @@ export async function activateOnChain(
   policy: OnChainPolicy,
   signature: Hex,
   publicClient: PublicClient,
+  vault: Address,
 ): Promise<ActivationResult> {
   const activationTx = await ownerWallet.writeContract({
     account: ownerWallet.account!,
     chain: robinhood,
-    address: deployment.vault,
+    address: vault,
     abi: VAULT_ABI,
     functionName: "activatePolicy",
     args: [policy, signature],

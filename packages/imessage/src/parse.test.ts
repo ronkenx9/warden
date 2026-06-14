@@ -1,7 +1,7 @@
 import { parseEther } from "viem";
 import { parsePolicy } from "./parse.js";
 import { newSession, reduce } from "./session.js";
-import { deployment } from "./config.js";
+import { ASSET_VAULTS, deployment } from "./config.js";
 
 let passed = 0;
 let failed = 0;
@@ -29,6 +29,28 @@ function eq<T>(actual: T, expected: T, label: string) {
   eq(p.forbiddenEndMinute, 6 * 60, "forbidden end 06:00");
   eq(p.validForDays, 7, "validity 7 days");
   assert(p.understood.includes("tradingWindow"), "trading window understood");
+}
+
+// --- Parser: each asset routes to its OWN vault (not a shared one) ---
+{
+  const tsla = parsePolicy("TSLA only, €50");
+  eq(tsla.vault, ASSET_VAULTS.tsla, "TSLA -> TSLA vault");
+  const amd = parsePolicy("AMD only, €50");
+  eq(amd.allowedAsset, deployment.amd, "AMD asset resolves");
+  eq(amd.vault, ASSET_VAULTS.amd, "AMD -> AMD vault");
+  const nflx = parsePolicy("just NFLX, max €20");
+  eq(nflx.vault, ASSET_VAULTS.nflx, "NFLX -> NFLX vault");
+  assert(amd.vault !== tsla.vault, "different assets get different vaults");
+}
+
+// --- Parser: switching asset mid-edit re-routes the vault ---
+{
+  let r = reduce(newSession("+1"), "TSLA, €50, no trades 22:00 to 06:00");
+  eq(r.session.draft!.vault, ASSET_VAULTS.tsla, "starts on TSLA vault");
+  r = reduce(r.session, "actually use AMZN instead");
+  eq(r.session.draft!.allowedAsset, deployment.amzn, "edit switches asset to AMZN");
+  eq(r.session.draft!.vault, ASSET_VAULTS.amzn, "edit re-routes to AMZN vault");
+  eq(r.session.draft!.forbiddenStartMinute, 22 * 60, "edit preserves prior window");
 }
 
 // --- Parser: 12h clock + 'don't trade from X to Y' phrasing ---

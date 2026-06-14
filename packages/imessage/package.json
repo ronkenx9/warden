@@ -7,7 +7,8 @@
     "build": "tsc -p tsconfig.json",
     "demo": "tsx src/demo.ts",
     "test": "tsx src/parse.test.ts",
-    "live": "tsx src/spectrum-live.ts"
+    "live": "tsx src/spectrum-live.ts",
+    "verify:vaults": "tsx src/verify-vaults.ts"
   },
   "dependencies": {
     "tsx": "^4.22.4",

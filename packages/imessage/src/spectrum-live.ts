@@ -64,7 +64,7 @@ async function main() {
       const block = await publicClient.getBlock();
       const policy = buildOnChainPolicy(draft, owner.address, agent.address, block.timestamp);
       const signature = await signPolicy(owner, policy);
-      const result = await activateOnChain(ownerWallet, agentWallet, policy, signature, publicClient);
+      const result = await activateOnChain(ownerWallet, agentWallet, policy, signature, publicClient, draft.vault);
 
       session = { ...session, stage: "done" };
       printWarden(

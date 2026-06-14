@@ -25,6 +25,18 @@ The monitor service is x402-shaped: `GET /quote` returns an exact-payment quote,
 - Stylus track: Rust/Stylus Slash Pool mirrors the Solidity slashing path and is deployed/activated on Robinhood Chain testnet.
 - Robinhood Chain: live verified vaults wrap official Robinhood Chain testnet TSLA, AMD, AMZN, PLTR, and NFLX tokens.
 
+## Coming Soon: Text The Leash (iMessage Front Door)
+
+The next WARDEN surface is a consumer front door over iMessage: describe the leash in plain English ("TSLA only, max EUR 50 a trade, nothing 22:00-06:00"), and WARDEN turns it into a signed on-chain policy and activates the agent's vault. This is the onboarding layer on top of the same contracts above — it does not change the protocol.
+
+Status is honest and scoped:
+
+- The natural-language -> EIP-712 policy -> `activatePolicy` path is implemented in `packages/imessage` and unit-tested (parser + confirmation gate + per-asset vault routing). The signature is verified against the deployed `PermissionEngine` domain offline, with zero creds, via `pnpm --filter @warden/imessage demo`.
+- All five per-asset vaults were verified on-chain to share the single `PermissionEngine`, so one signing domain is valid for every asset (`pnpm --filter @warden/imessage verify:vaults`).
+- The live iMessage transport (Photon Spectrum 5-stage pipeline) is not shipped yet; it is the documented production swap in `packages/imessage/src/spectrum-live.ts`.
+
+Because the texting transport is not live, the landing page presents it as a waitlist feature, not a shipped capability. Early-access signups are captured on the dashboard.
+
 ## Live Robinhood Chain Testnet Contracts
 
 Chain:
@@ -121,6 +133,7 @@ Adversarial fuzzing coverage is included in `packages/contracts/test/WARDENVault
 - Solidity contracts: `packages/contracts/src/`
 - Rust/Stylus Slash Pool: `packages/slash-pool/`
 - Monitor demo: `packages/monitor/`
+- iMessage front door (coming soon): `packages/imessage/`
 - Dashboard: `packages/dashboard/`
 
 ## Honest Limitations To Keep In Submission
@@ -129,6 +142,7 @@ Adversarial fuzzing coverage is included in `packages/contracts/test/WARDENVault
 - The live Robinhood vault set currently has official TSLA, AMD, AMZN, PLTR, and NFLX deposited.
 - Live USDG collateral is funded and the live slash/reputation proof has been recorded.
 - The Rust/Stylus Slash Pool is deployed and activated on Robinhood Chain testnet.
+- The iMessage front door is in development. The natural-language-to-signed-policy path is implemented and tested in `packages/imessage`, but the live texting transport is not yet shipped; the landing page presents it as a waitlist feature, not a live capability.
 - The Arbitrum One deployment is a mock demo stack. Do not describe it as wrapping official Robinhood stock tokens unless Robinhood publishes official stock contracts on Arbitrum One.
 - The repo includes production admin/timelock scripts, `Ownable2Step` SlashPool ownership, monitor registry, and x402 settlement reconciliation.
 - Do not claim retail production readiness until external audit, external compliance review, live timelock ownership transfer, and independent monitor operators are complete.
