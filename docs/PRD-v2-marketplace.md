@@ -170,21 +170,22 @@ costs the bond.
 
 ---
 
-## 7b. Self-audit findings (AgentMarketplace, testnet)
-A `/code-review` pass on the fee contract surfaced:
-- ✅ **Fixed** — listing hijack: `list()` now binds an `agentId` to its first
+## 7b. Self-audit findings (AgentMarketplace)
+A `/code-review` pass on the fee contract surfaced four items; the security-
+relevant ones are now fixed:
+- ✅ **Fixed** — listing hijack: `list()` binds an `agentId` to its first
   operator; others can't overwrite it.
-- ⏳ **Open (pre-mainnet)** — renter fee budgets are *global*, not scoped per
-  agent; an authorized router could debit any renter for any listing. Trust
-  currently rests on the authorized router. Scope budgets per (renter, agent)
-  before real value.
-- ⏳ **Open (pre-mainnet)** — `recordTrade` treats `tradeValue` as fee-token
-  units; the vault's 18-dec `valueEur` must be converted to the 6-dec fee token
-  by the router.
+- ✅ **Fixed** — budget scoping: `feeBudget` is now per `(renter, agentId)`.
+  Deposits/withdrawals/recording are agent-scoped, so a router can only spend a
+  renter's budget on an agent they explicitly funded. (`testBudgetIsScopedPerAgent`)
+- ✅ **Clarified** — `recordTrade`'s value param is `tradeValueInFeeToken`: the
+  router converts the EUR policy value to fee-token units; the contract never
+  mixes decimals.
 - 📝 **Assumption** — the conservation invariant assumes a non-deflationary fee
   token (USDG qualifies).
 
-These are acceptable on testnet (trusted router, mock value) and gate mainnet.
+16 tests pass, incl. fuzz fee-math/conservation, per-agent isolation, and the
+fee-iff-allowed integration test. No external audit needed for testnet.
 
 ## 8. Risks & mitigations
 - **Money-contract risk** — new fee logic is the highest-risk surface. Mitigation:

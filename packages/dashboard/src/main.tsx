@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ArrowRight,
+  ArrowUpRight,
   Ban,
   Check,
   Fingerprint,
@@ -11,7 +12,7 @@ import {
   Vault,
 } from "lucide-react";
 import swarm from "./swarm-data.json";
-import { Playground } from "./Playground.js";
+import { MarketplacePage, PlaygroundPage } from "./app.js";
 import "./styles.css";
 
 /* ----------------------------------------------------------------
@@ -85,10 +86,14 @@ function Nav() {
       <div className="nav-links">
         <a href="#mechanism">Mechanism</a>
         <a href="#live">Live on Robinhood</a>
-        <a href="#marketplace">Marketplace</a>
-        <a href="#playground">Playground</a>
+        <a href="#/marketplace">Marketplace</a>
+        <a href="#/playground">Playground</a>
         <a href="#waitlist">Text the leash</a>
       </div>
+      <a className="btn btn-primary nav-cta" href="#/marketplace">
+        Open app
+        <span className="cap"><ArrowUpRight size={15} strokeWidth={2} /></span>
+      </a>
     </nav>
   );
 }
@@ -376,7 +381,7 @@ function Marketplace() {
                         {slashed ? (
                           <span className="rent-bad">slashed · {a.violations}</span>
                         ) : (
-                          <a className="rent-btn" href="#playground">Rent</a>
+                          <a className="rent-btn" href="#/marketplace">Rent</a>
                         )}
                       </div>
                     </div>
@@ -568,7 +573,7 @@ function Footer() {
   );
 }
 
-function App() {
+function Landing() {
   return (
     <>
       <Nav />
@@ -578,7 +583,6 @@ function App() {
         <Mechanism />
         <Live />
         <Marketplace />
-        <Playground />
         <Waitlist />
       </main>
       <Footer />
@@ -586,8 +590,28 @@ function App() {
   );
 }
 
+function useHashRoute() {
+  const [hash, setHash] = useState(() => (typeof location !== "undefined" ? location.hash : ""));
+  useEffect(() => {
+    const onChange = () => {
+      setHash(location.hash);
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener("hashchange", onChange);
+    return () => window.removeEventListener("hashchange", onChange);
+  }, []);
+  return hash;
+}
+
+function Root() {
+  const hash = useHashRoute();
+  if (hash.startsWith("#/marketplace")) return <MarketplacePage />;
+  if (hash.startsWith("#/playground")) return <PlaygroundPage />;
+  return <Landing />;
+}
+
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <Root />
   </React.StrictMode>,
 );

@@ -174,7 +174,7 @@ export function Playground() {
   return (
     <section className="section playground" id="playground">
       <div className="wrap">
-        <div className="section-head reveal">
+        <div className="section-head">
           <span className="section-kicker">Playground · live testnet</span>
           <h2>Put a leash on-chain yourself.</h2>
           <p>
@@ -186,7 +186,7 @@ export function Playground() {
 
         <div className="pg-grid">
           {/* 1 — faucet */}
-          <div className="bezel reveal">
+          <div className="bezel">
             <div className="core pg-step">
               <div className="pg-num">1</div>
               <h3>Get testnet gas</h3>
@@ -206,7 +206,7 @@ export function Playground() {
           </div>
 
           {/* 2 — connect */}
-          <div className="bezel reveal" data-delay="1">
+          <div className="bezel" data-delay="1">
             <div className="core pg-step">
               <div className="pg-num">2</div>
               <h3>Connect your wallet</h3>
@@ -224,7 +224,7 @@ export function Playground() {
           </div>
 
           {/* 3 — policy */}
-          <div className="bezel reveal col-span" data-delay="2">
+          <div className="bezel col-span" data-delay="2">
             <div className="core pg-step">
               <div className="pg-num">3</div>
               <h3>Write the leash</h3>
@@ -253,7 +253,7 @@ export function Playground() {
           </div>
 
           {/* 4 — break it */}
-          <div className="bezel reveal col-span" data-delay="2">
+          <div className="bezel col-span" data-delay="2">
             <div className="core pg-step">
               <div className="pg-num">4</div>
               <h3>Now try to break it</h3>

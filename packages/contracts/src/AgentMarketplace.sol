@@ -47,7 +47,10 @@ contract AgentMarketplace is Ownable2Step, ReentrancyGuard {
 
     mapping(uint256 agentId => Listing) public listings;
     mapping(address router => bool authorized) public authorizedRouters;
-    mapping(address renter => uint256 amount) public feeBudget;
+    // budgets are scoped per (renter, agent): a renter funds only the agents they
+    // choose to rent, so a router can never spend a renter's budget on an agent
+    // they didn't opt into.
+    mapping(address renter => mapping(uint256 agentId => uint256 amount)) public feeBudget;
     mapping(address operator => uint256 amount) public claimable;
 
     uint256 public totalBudget;
@@ -63,8 +66,8 @@ contract AgentMarketplace is Ownable2Step, ReentrancyGuard {
         string strategyURI
     );
     event Delisted(uint256 indexed agentId);
-    event BudgetDeposited(address indexed renter, uint256 amount);
-    event BudgetWithdrawn(address indexed renter, uint256 amount);
+    event BudgetDeposited(address indexed renter, uint256 indexed agentId, uint256 amount);
+    event BudgetWithdrawn(address indexed renter, uint256 indexed agentId, uint256 amount);
     event FeeAccrued(uint256 indexed agentId, address indexed operator, address indexed renter, uint256 amount);
     event FeesClaimed(address indexed operator, uint256 amount);
 
@@ -114,21 +117,21 @@ contract AgentMarketplace is Ownable2Step, ReentrancyGuard {
 
     // --- demand side: renters ---
 
-    function depositFeeBudget(uint256 amount) external {
+    function depositFeeBudget(uint256 agentId, uint256 amount) external {
         if (amount == 0) revert InvalidAmount();
-        feeBudget[msg.sender] += amount;
+        feeBudget[msg.sender][agentId] += amount;
         totalBudget += amount;
         feeToken.safeTransferFrom(msg.sender, address(this), amount);
-        emit BudgetDeposited(msg.sender, amount);
+        emit BudgetDeposited(msg.sender, agentId, amount);
     }
 
-    function withdrawFeeBudget(uint256 amount) external nonReentrant {
+    function withdrawFeeBudget(uint256 agentId, uint256 amount) external nonReentrant {
         if (amount == 0) revert InvalidAmount();
-        if (feeBudget[msg.sender] < amount) revert InsufficientBudget();
-        feeBudget[msg.sender] -= amount;
+        if (feeBudget[msg.sender][agentId] < amount) revert InsufficientBudget();
+        feeBudget[msg.sender][agentId] -= amount;
         totalBudget -= amount;
         feeToken.safeTransfer(msg.sender, amount);
-        emit BudgetWithdrawn(msg.sender, amount);
+        emit BudgetWithdrawn(msg.sender, agentId, amount);
     }
 
     // --- execution: router-gated fee recording ---
@@ -136,8 +139,11 @@ contract AgentMarketplace is Ownable2Step, ReentrancyGuard {
     /// @notice Charge the listing fee for an ALLOWED trade. Reverts unless called
     ///         by an authorized router. The router calls this only after a
     ///         successful `execute()`, so blocked trades never reach here.
-    /// @return fee The fee moved from the renter's budget to the operator.
-    function recordTrade(uint256 agentId, address renter, uint256 tradeValue)
+    /// @param tradeValueInFeeToken The trade notional ALREADY denominated in
+    ///        fee-token units. The router converts the policy's EUR value to the
+    ///        fee token; this contract never mixes decimals.
+    /// @return fee The fee moved from the renter's per-agent budget to the operator.
+    function recordTrade(uint256 agentId, address renter, uint256 tradeValueInFeeToken)
         external
         returns (uint256 fee)
     {
@@ -145,12 +151,12 @@ contract AgentMarketplace is Ownable2Step, ReentrancyGuard {
         Listing memory listing = listings[agentId];
         if (!listing.active) revert ListingInactive();
 
-        fee = (tradeValue * listing.feeBps) / BPS_DENOMINATOR;
+        fee = (tradeValueInFeeToken * listing.feeBps) / BPS_DENOMINATOR;
         if (fee == 0) return 0;
-        if (feeBudget[renter] < fee) revert InsufficientBudget();
+        if (feeBudget[renter][agentId] < fee) revert InsufficientBudget();
 
-        // move fee from renter budget -> operator claimable (sum preserved)
-        feeBudget[renter] -= fee;
+        // move fee from the renter's per-agent budget -> operator claimable (sum preserved)
+        feeBudget[renter][agentId] -= fee;
         claimable[listing.operator] += fee;
         // totalBudget and totalClaimable net out: one down, one up by `fee`.
         totalBudget -= fee;
