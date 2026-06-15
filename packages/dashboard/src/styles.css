@@ -302,7 +302,12 @@ input {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: url("/img/hero-cinematic.png") center 28% / cover no-repeat;
+  background:
+    image-set(
+      url("/img/hero-cinematic.webp") type("image/webp"),
+      url("/img/hero-cinematic.png") type("image/png")
+    )
+    center 28% / cover no-repeat;
 }
 
 .hero-plate::after {
@@ -538,11 +543,21 @@ input {
 }
 
 .plate-constraint {
-  background: url("/img/scene-constraint.png") center right / cover no-repeat;
+  background:
+    image-set(
+      url("/img/scene-constraint.webp") type("image/webp"),
+      url("/img/scene-constraint.png") type("image/png")
+    )
+    center right / cover no-repeat;
 }
 
 .plate-bloom {
-  background: url("/img/scene-rules-bloom.png") center / cover no-repeat;
+  background:
+    image-set(
+      url("/img/scene-rules-bloom.webp") type("image/webp"),
+      url("/img/scene-rules-bloom.png") type("image/png")
+    )
+    center / cover no-repeat;
 }
 
 .plate-bg::after {
